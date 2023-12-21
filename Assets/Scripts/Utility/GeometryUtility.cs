@@ -101,14 +101,14 @@ namespace Utility
             float area = lastP.X * firstP.Y - firstP.X * lastP.Y;
             int len = polygonPoints.Count;
 
-            for (int i = 0; i < len - 2; i++)
+            for (int i = 0; i < len - 1; i++)
             {
                 MyVector2 p1 = polygonPoints[i] + dV;
                 MyVector2 p2 = polygonPoints[i+1] + dV;
                 area += p1.X * p2.Y;
             }
             
-            for (int i = 1; i < len - 1; i++)
+            for (int i = 1; i < len; i++)
             {
                 MyVector2 p1 = polygonPoints[i] + dV;
                 MyVector2 p2 = polygonPoints[i-1] + dV;
