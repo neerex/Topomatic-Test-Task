@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using DataStructures;
 
 namespace Utility
@@ -85,6 +87,45 @@ namespace Utility
             bool isInside = !(numberOfIntersections == 0 || numberOfIntersections % 2 == 0);
             
             return isInside;
+        }
+
+        //Gauss area formula
+        public static float PolygonArea(List<MyVector2> polygonPoints)
+        {
+            //formula working correctly if the initial poly is in +X +Y quadrant
+            //so we move every point on dV, where dV is Vec2(minX, minY)
+            MyVector2 dV = GetVectorForMovingPolyIntoPlusXPlusYArea(polygonPoints);
+            MyVector2 firstP = polygonPoints[0] + dV;
+            MyVector2 lastP = polygonPoints[^1] + dV;
+            
+            float area = lastP.X * firstP.Y - firstP.X * lastP.Y;
+            int len = polygonPoints.Count;
+
+            for (int i = 0; i < len - 2; i++)
+            {
+                MyVector2 p1 = polygonPoints[i] + dV;
+                MyVector2 p2 = polygonPoints[i+1] + dV;
+                area += p1.X * p2.Y;
+            }
+            
+            for (int i = 1; i < len - 1; i++)
+            {
+                MyVector2 p1 = polygonPoints[i] + dV;
+                MyVector2 p2 = polygonPoints[i-1] + dV;
+                area -= p1.X * p2.Y;
+            }
+
+            float totalArea = 0.5f * Math.Abs(area);
+            return totalArea;
+        }
+
+        //formula for getting dV for moving poly into +X +Y area
+        public static MyVector2 GetVectorForMovingPolyIntoPlusXPlusYArea(List<MyVector2> polygonPoints)
+        {
+            float minX = polygonPoints.Min(p => p.X);
+            float minY = polygonPoints.Min(p => p.Y);
+
+            return new MyVector2(Math.Abs(minX), Math.Abs(minY));
         }
     }
 }

@@ -25,8 +25,7 @@ namespace GreinerHormannAlgorithm
         //If this is an intersection vertex, this is how far is is between two vertices that are not intersecting
         public float Alpha = 0f;
 
-        //Is this vertex taken by the final polygon, which is more efficient than removing from a list
-        //when we create the final polygon
+        //Is this vertex taken by the final polygon
         public bool IsTakenByFinalPolygon;
 
         public ClipVertex(MyVector2 coordinate)

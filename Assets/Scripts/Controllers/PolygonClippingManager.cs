@@ -3,6 +3,7 @@ using DataStructures;
 using GreinerHormannAlgorithm;
 using UnityEngine;
 using Utility;
+using GeometryUtility = Utility.GeometryUtility;
 
 namespace Controllers
 {
