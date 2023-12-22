@@ -17,7 +17,6 @@ https://ru.wikipedia.org/wiki/%D0%A4%D0%BE%D1%80%D0%BC%D1%83%D0%BB%D0%B0_%D0%BF%
 Файл в проекте: GeometryUtility.cs метод PolygonArea()
 
 #P.S.
-Потраченное время на проект: ~14 часов
-Для визуализации извользован движок Unity
+Потраченное время на проект: ~14 часов. Для визуализации извользован движок Unity
 
 ![Bu7fIBEPTf](https://github.com/neerex/Topomatic-Test-Task/assets/48661254/e7cbde82-006f-4676-ad38-b91d50cd14d4)
