@@ -6,15 +6,8 @@ namespace View
     [RequireComponent(typeof(DragObject))]
     public class VertexView : MonoBehaviour
     {
-        [SerializeField] private PolygonClippingController _polygonClippingController;
         private DragObject _dragObject;
-        //private PolygonClippingController _polygonClippingController;
 
-        public void Initialize(PolygonClippingController polygonClippingController)
-        {
-            _polygonClippingController = polygonClippingController;
-        }
-        
         private void Awake()
         {
             _dragObject = GetComponent<DragObject>();
@@ -32,7 +25,7 @@ namespace View
 
         private void RecalculatePolygon(Vector3 v)
         {
-            _polygonClippingController.CalculatePolygons();
+            PolygonClippingController.Instance.CalculatePolygons();
         }
     }
 }

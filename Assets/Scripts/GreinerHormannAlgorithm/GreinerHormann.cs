@@ -119,9 +119,7 @@ namespace GreinerHormannAlgorithm
             if (shouldReverse) 
                 finalPoly[^1].Reverse();
         }
-
-
-
+        
         //Get the clipped polygons: either the intersection or the !intersection
         //We might end up with more than one polygon and they are connected via ClipVertex NextPoly
         //To get the intersection, we should
@@ -235,7 +233,7 @@ namespace GreinerHormannAlgorithm
                 if (resetVertex.Equals(poly[0]))
                     break;
 
-                safety += 1;
+                safety++;
 
                 if (safety > 100000)
                     break;
@@ -318,7 +316,7 @@ namespace GreinerHormannAlgorithm
 
                 insertAfterThisVertex = insertAfterThisVertex.Next;
 
-                safety ++;
+                safety++;
 
                 if (safety > 100000)
                     break;

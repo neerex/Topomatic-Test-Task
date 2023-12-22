@@ -93,7 +93,7 @@ namespace Utility
         public static float PolygonArea(List<MyVector2> polygonPoints)
         {
             //formula working correctly if the initial poly is in +X +Y quadrant
-            //so we move every point on dV, where dV is Vec2(minX, minY)
+            //so we move every point on dV, where dV is opposite of Vec2(minX, minY)
             MyVector2 dV = GetVectorForMovingPolyIntoPlusXPlusYArea(polygonPoints);
             MyVector2 firstP = polygonPoints[0] + dV;
             MyVector2 lastP = polygonPoints[^1] + dV;

@@ -7,10 +7,13 @@ namespace Utility
     public static class GeometryHelper
     {
         public static MyVector2 ToMyVector2(this Vector3 v) => 
-            new MyVector2(v.x, v.z);
+            new MyVector2(v.x, v.y);
 
-        public static Vector3 ToVector3(this MyVector2 v, float yPos = 0f) => 
-            new Vector3(v.X, yPos, v.Y);
+        public static Vector3 ToVector3(this MyVector2 v, float zPos = 0f) => 
+            new Vector3(v.X, v.Y, zPos);
+
+        public static Vector2 ToVector2(this MyVector2 v) => 
+            new Vector2(v.X, v.Y);
 
         public static List<Vector3> ToListV3(this List<MyVector2> thisPolygon)
         {
