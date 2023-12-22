@@ -24,7 +24,6 @@ namespace Controllers
 
         public void CalculatePolygons()
         {
-            //Generate the polygons
             _polyA = _polygonProvider.GetPolyVertices(PolygonType.A);
             _polyB = _polygonProvider.GetPolyVertices(PolygonType.B);
             

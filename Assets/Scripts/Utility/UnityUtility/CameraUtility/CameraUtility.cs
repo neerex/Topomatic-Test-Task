@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Utility.UnityUtility
+namespace Utility.UnityUtility.CameraUtility
 {
     public static class CameraUtility
     {

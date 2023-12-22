@@ -1,5 +1,6 @@
 ﻿using Controllers.Interfaces;
 using UnityEngine;
+using Utility.UnityUtility.ObjectUtility;
 
 namespace View
 {
@@ -21,6 +22,7 @@ namespace View
         
         private void OnDestroy()
         {
+            _polygonClippingController.CalculatePolygons();
             _dragObject.OnPositionChanged -= RecalculatePolygon;
         }
 

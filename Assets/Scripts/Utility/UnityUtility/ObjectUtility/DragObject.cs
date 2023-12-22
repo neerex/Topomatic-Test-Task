@@ -1,8 +1,7 @@
 using System;
 using UnityEngine;
-using Utility.UnityUtility;
 
-namespace View
+namespace Utility.UnityUtility.ObjectUtility
 {
     public class DragObject : MonoBehaviour
     {
@@ -27,7 +26,7 @@ namespace View
         private void OnMouseDrag()
         {
             Vector3 newPoint = GetMouseAsWorldPoint() + _mOffset;
-            newPoint = CameraUtility.ClampPointToViewportWithBorder(_camera, newPoint);
+            newPoint = CameraUtility.CameraUtility.ClampPointToViewportWithBorder(_camera, newPoint);
             transform.position = newPoint;
             OnPositionChanged?.Invoke(Pos);
         }

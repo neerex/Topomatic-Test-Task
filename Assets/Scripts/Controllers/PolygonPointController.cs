@@ -1,6 +1,6 @@
 ﻿using Controllers.Interfaces;
 using UnityEngine;
-using Utility.UnityUtility;
+using Utility.UnityUtility.CameraUtility;
 using View;
 using Random = UnityEngine.Random;
 
@@ -72,7 +72,7 @@ namespace Controllers
                 return;
             
             Transform lastChild = parent.GetChild(childCount - 1);
-            Object.Destroy(lastChild.gameObject);
+            Object.DestroyImmediate(lastChild.gameObject);
         }
     }
 
