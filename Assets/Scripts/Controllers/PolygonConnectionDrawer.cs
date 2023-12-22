@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Controllers.Interfaces;
 using DataStructures;
 using UnityEngine;
 using Utility;
@@ -7,12 +8,15 @@ namespace Controllers
 {
     public class PolygonConnectionDrawer : MonoBehaviour
     {
+        private IPolygonClippingController _polygonClippingController;
+        
         [SerializeField] private LineRenderer _polyALineRenderer;
         [SerializeField] private LineRenderer _polyBLineRenderer;
         
-        void Start()
+        public void Initialize(IPolygonClippingController polygonClippingController)
         {
-            PolygonClippingController.Instance.OnPolygonsRecalculation += UpdateLineRenderers;
+            _polygonClippingController = polygonClippingController;
+            _polygonClippingController.OnPolygonsRecalculation += UpdateLineRenderers;
         }
 
         private void UpdateLineRenderers(List<MyVector2> polyA, List<MyVector2> polyB, List<List<MyVector2>> finalPoly)
@@ -25,6 +29,11 @@ namespace Controllers
             
             _polyALineRenderer.SetPositions(polyAV3);
             _polyBLineRenderer.SetPositions(polyBV3);
+        }
+
+        public void OnDestroy()
+        {
+            _polygonClippingController.OnPolygonsRecalculation -= UpdateLineRenderers;
         }
     }
 }

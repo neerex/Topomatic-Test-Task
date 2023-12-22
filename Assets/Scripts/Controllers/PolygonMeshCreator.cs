@@ -1,22 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using Controllers.Interfaces;
 using DataStructures;
 using UnityEngine;
 using Utility;
 
 namespace Controllers
 {
-    public class PolygonMeshCreator : MonoBehaviour
+    public class PolygonMeshCreator : IDisposable, IPolygonMeshCreator
     {
-        [SerializeField] PolygonCollider2D _collider;
-        [SerializeField] MeshFilter _meshFilter;
+        private readonly IPolygonClippingController _polygonClippingController;
+        private PolygonCollider2D _collider;
+        private MeshFilter _meshFilter;
 
-        public static PolygonMeshCreator Instance { get; set; }
-
-        private void Awake()
+        public PolygonMeshCreator(IPolygonClippingController polygonClippingController)
         {
-            Instance = this;
+            _polygonClippingController = polygonClippingController;
+            SetupMeshCreator();
+            _polygonClippingController.OnPolygonsRecalculation += CreateMeshFromPolyVertexList;
         }
+
+        private void CreateMeshFromPolyVertexList(List<MyVector2> polyA, List<MyVector2> polyB, List<List<MyVector2>> finalPoly) => 
+            CreateMeshFromPolyVertexList(finalPoly);
 
         public void CreateMeshFromPolyVertexList(List<List<MyVector2>> finalPoly)
         {
@@ -38,6 +43,20 @@ namespace Controllers
                 path[i] = poly[i].ToVector2();
             }
             return path;
+        }
+
+        private void SetupMeshCreator()
+        {
+            var meshCreator = new GameObject("PolygonMeshCreator");
+            _collider = meshCreator.AddComponent<PolygonCollider2D>();
+            _meshFilter = meshCreator.AddComponent<MeshFilter>();
+            var renderer = meshCreator.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = Resources.Load<Material>("Materials/Poly");
+        }
+
+        public void Dispose()
+        {
+            _polygonClippingController.OnPolygonsRecalculation -= CreateMeshFromPolyVertexList;
         }
     }
 }

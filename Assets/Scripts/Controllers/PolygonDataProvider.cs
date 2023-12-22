@@ -1,23 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
+using Controllers.Interfaces;
 using DataStructures;
 using UnityEngine;
 using Utility;
+using View;
 
 namespace Controllers
 {
-    public class PolygonProvider : MonoBehaviour
+    public class PolygonDataProvider : MonoBehaviour, IPolygonProvider
     {
         [SerializeField] private Transform _polyAParent;
         [SerializeField] private Transform _polyBParent;
 
-        public static PolygonProvider Instance { get; private set; }
-
-        private void Awake()
+        public void Initialize(IPolygonClippingController polygonClippingController)
         {
-            Instance = this;
+            var initialVertexesA = _polyAParent.GetComponentsInChildren<VertexView>();
+            var initialVertexesB = _polyBParent.GetComponentsInChildren<VertexView>();
+
+            foreach (VertexView vertexView in initialVertexesA) 
+                vertexView.Initialize(polygonClippingController);
+            
+            foreach (VertexView vertexView in initialVertexesB) 
+                vertexView.Initialize(polygonClippingController);
         }
 
+        public Transform GetPolygonContainerParent(PolygonType polygonType)
+        {
+            return polygonType switch
+            {
+                PolygonType.A => _polyAParent,
+                PolygonType.B => _polyBParent
+            };
+        }
+        
         public List<MyVector2> GetPolyVertices(PolygonType polygonType)
         {
             List<MyVector2> poly = polygonType switch

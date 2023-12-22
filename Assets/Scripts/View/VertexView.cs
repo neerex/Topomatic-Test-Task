@@ -1,4 +1,4 @@
-﻿using Controllers;
+﻿using Controllers.Interfaces;
 using UnityEngine;
 
 namespace View
@@ -6,26 +6,27 @@ namespace View
     [RequireComponent(typeof(DragObject))]
     public class VertexView : MonoBehaviour
     {
-        private DragObject _dragObject;
+        [SerializeField] private DragObject _dragObject;
+        private IPolygonClippingController _polygonClippingController;
 
-        private void Awake()
+        public void Initialize(IPolygonClippingController polygonClippingController)
         {
-            _dragObject = GetComponent<DragObject>();
-        }
-
-        private void OnEnable()
-        {
+            _polygonClippingController = polygonClippingController;
+            
+            _dragObject ??= GetComponent<DragObject>();
             _dragObject.OnPositionChanged += RecalculatePolygon;
+            
+            _polygonClippingController.CalculatePolygons();
         }
-
-        private void OnDisable()
+        
+        private void OnDestroy()
         {
             _dragObject.OnPositionChanged -= RecalculatePolygon;
         }
 
         private void RecalculatePolygon(Vector3 v)
         {
-            PolygonClippingController.Instance.CalculatePolygons();
+            _polygonClippingController.CalculatePolygons();
         }
     }
 }

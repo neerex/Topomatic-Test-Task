@@ -1,25 +1,32 @@
-﻿using UnityEngine;
+﻿using Controllers.Interfaces;
+using UnityEngine;
 using Utility.UnityUtility;
 using View;
 using Random = UnityEngine.Random;
 
 namespace Controllers
 {
-    public class PolygonPointController : MonoBehaviour
+    public class PolygonPointController : IPolygonPointController
     {
-        [SerializeField] private Transform _polyAParent;
-        [SerializeField] private Transform _polyBParent;
+        private readonly Transform _polyAParent;
+        private readonly Transform _polyBParent;
 
-        [SerializeField] private VertexView _polyAVertexView;
-        [SerializeField] private VertexView _polyBVertexView;
+        private readonly VertexView _polyAVertexView;
+        private readonly VertexView _polyBVertexView;
 
-        private Camera _camera;
-        public static PolygonPointController Instance { get; private set; }
-        
-        public void Awake()
+        private readonly IPolygonClippingController _polygonClippingController;
+        private readonly Camera _camera;
+
+        public PolygonPointController(IPolygonProvider polygonProvider, IPolygonClippingController polygonClippingController)
         {
-            Instance = this;
+            _polygonClippingController = polygonClippingController;
             _camera = Camera.main;
+
+            _polyAVertexView = Resources.Load<VertexView>("Prefabs/VertexViewA");
+            _polyBVertexView = Resources.Load<VertexView>("Prefabs/VertexViewB");
+
+            _polyAParent = polygonProvider.GetPolygonContainerParent(PolygonType.A);
+            _polyBParent = polygonProvider.GetPolygonContainerParent(PolygonType.B);
         }
 
         public void AddVertex(PolygonType polygonType)
@@ -40,8 +47,10 @@ namespace Controllers
             Vector3 randomPoint = parent.GetChild(0).position + randomVector;
             Vector3 clampedPoint = CameraUtility.ClampPointToViewportWithBorder(_camera, randomPoint);
 
-            Instantiate(view, clampedPoint, Quaternion.identity, parent);
-            PolygonClippingController.Instance.CalculatePolygons();
+            VertexView newVertex = Object.Instantiate(view, clampedPoint, Quaternion.identity, parent);
+            newVertex.Initialize(_polygonClippingController);
+            
+            _polygonClippingController.CalculatePolygons();
         }
 
         public void RemoveVertex(PolygonType polygonType)
@@ -52,7 +61,7 @@ namespace Controllers
                 PolygonType.B => _polyBParent
             };
             RemoveLastChild(parent);
-            PolygonClippingController.Instance.CalculatePolygons();
+            _polygonClippingController.CalculatePolygons();
         }
 
         private void RemoveLastChild(Transform parent)
@@ -63,7 +72,7 @@ namespace Controllers
                 return;
             
             Transform lastChild = parent.GetChild(childCount - 1);
-            Destroy(lastChild.gameObject);
+            Object.Destroy(lastChild.gameObject);
         }
     }
 
