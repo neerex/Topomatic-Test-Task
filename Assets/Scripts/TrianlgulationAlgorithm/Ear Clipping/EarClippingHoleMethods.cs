@@ -177,7 +177,7 @@ namespace Habrador_Computational_Geometry
 
                 Edge2 line_hull = new Edge2(p1_hull, p2_hull);
 
-                bool isIntersecting = GeometryUtility.LineLine(line_hole_to_outside, line_hull, includeEndPoints: true);
+                bool isIntersecting = GeometryUtility.LineLine(line_hole_to_outside, line_hull, includeEndPoints: false);
 
                 //Here we can maybe add a check if any of the vertices is on the line???
 

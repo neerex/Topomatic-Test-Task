@@ -16,7 +16,7 @@ namespace Utility
             new Vector2(v.X, v.Y);
         
         public static MyVector3 ToMyVector3_Yis3D(this MyVector2 v, float yPos = 0f) => 
-            new MyVector3(v.X, yPos, v.Y);
+            new MyVector3(v.X, v.Y, yPos);
 
         public static List<Vector3> ToListV3(this List<MyVector2> thisPolygon)
         {

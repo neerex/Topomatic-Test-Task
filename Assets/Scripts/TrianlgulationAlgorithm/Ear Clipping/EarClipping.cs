@@ -12,15 +12,14 @@ namespace Habrador_Computational_Geometry
     //- "Triangulation by Ear Clipping" by David Eberly
     //- "Ear-Clipping Based Algorithms of Generating High-quality Polygon Triangulation" by people
     //Can also triangulate convex hulls but there are faster algorithms for that 
-    //This alorithm is called ear clipping and it's O(n*n) 
+    //This algorithm is called ear clipping and it's O(n*n) 
     //Another common algorithm is dividing it into trapezoids and it's O(n log n)
     //One can maybe do it in O(n) time but no such version is known
     public static class EarClipping
     {
         //The points on the hull (vertices) should be ordered counter-clockwise (and no doubles)
-        //The holes should be ordered clockwise (and no doubles)
         //Optimize triangles means that we will get a better-looking triangulation, which resembles a constrained Delaunay triangulation
-        public static HashSet<Triangle2> Triangulate(List<MyVector2> vertices, List<List<MyVector2>> allHoleVertices = null, bool optimizeTriangles = true)
+        public static HashSet<Triangle2> Triangulate(List<MyVector2> vertices, bool optimizeTriangles = true)
         {
             //Validate the data
             if (vertices == null || vertices.Count <= 2)
@@ -28,12 +27,7 @@ namespace Habrador_Computational_Geometry
                 Debug.LogWarning("Can't triangulate with Ear Clipping because too few vertices on the hull");
                 return null;
             }
-
-            //Step -1. Merge the holes with the points on the hull into one big polygon with invisible edges between the holes and the hull
-            if (allHoleVertices != null && allHoleVertices.Count > 0)
-            {
-                vertices = EarClippingHoleMethods.MergeHolesWithHull(vertices, allHoleVertices);
-            }
+            vertices.Reverse();
 
             //Step 0. Create a linked list connecting all vertices with each other which will make the calculations easier and faster
             List<LinkedVertex> verticesLinked = new List<LinkedVertex>();
@@ -41,7 +35,6 @@ namespace Habrador_Computational_Geometry
             for (int i = 0; i < vertices.Count; i++)
             {
                 LinkedVertex v = new LinkedVertex(vertices[i]);
-
                 verticesLinked.Add(v);
             }
 
@@ -53,10 +46,6 @@ namespace Habrador_Computational_Geometry
                 v.prevLinkedVertex = verticesLinked[MathUtility.ClampListIndex(i - 1, verticesLinked.Count)];
                 v.nextLinkedVertex = verticesLinked[MathUtility.ClampListIndex(i + 1, verticesLinked.Count)];
             }
-
-            //Debug.Log("Number of vertices: " + CountLinkedVertices(verticesLinked[0]));
-            
-
 
             //Step 1. Find:
             //- Convex vertices (interior angle smaller than 180 degrees)
@@ -80,8 +69,6 @@ namespace Habrador_Computational_Geometry
                 }
             }
 
-
-
             //Step 2. Find the initial ears
             HashSet<LinkedVertex> earVerts = new HashSet<LinkedVertex>();
 
@@ -94,12 +81,6 @@ namespace Habrador_Computational_Geometry
                     earVerts.Add(v);
                 }
             }
-
-
-            //Debug
-            //DisplayVertices(earVertices);
-
-
 
             //Step 3. Build the triangles
             HashSet<Triangle2> triangulation = new HashSet<Triangle2>();
@@ -115,11 +96,10 @@ namespace Habrador_Computational_Geometry
             {
                 //Pick an ear vertex and form a triangle
                 LinkedVertex ear = GetEarVertex(earVerts, optimizeTriangles);
-
+                //Debug.Log($"{earVerts.Count} ear verts");
                 if (ear == null)
                 {
-                    Debug.Log("Cant find ear");
-
+                    //Debug.Log("Cant find ear");
                     break;
                 }
 
@@ -137,9 +117,7 @@ namespace Habrador_Computational_Geometry
                 {
                     triangulation.Add(t);
                 }
-
                 
-
                 //Check if we have found all triangles
                 //This should also prevent us from getting stuck in an infinite loop
                 if (triangulation.Count >= maxTriangles)
@@ -161,23 +139,7 @@ namespace Habrador_Computational_Geometry
                 //Reconfigure the adjacent vertices
                 ReconfigureAdjacentVertex(v_prev, convexVerts, reflectVerts, earVerts);
                 ReconfigureAdjacentVertex(v_next, convexVerts, reflectVerts, earVerts);
-
-
-                //if (safety > 4)
-                //{
-                //    Debug.Log(earVerts.Count);
-
-                //    Debug.DrawLine(v_next.pos.ToVector3(), Vector3.zero, Color.blue, 3f);
-
-                //    //Debug.Log(IsVertexEar(v_next, reflectVerts));
-
-                //    Debug.Log(earVerts.Contains(v_next));
-
-                //    break;
-                //}
-
-
-
+                
                 safety += 1;
 
                 if (safety > 50000)

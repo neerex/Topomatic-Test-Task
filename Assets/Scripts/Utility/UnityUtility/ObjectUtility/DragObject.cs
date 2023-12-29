@@ -5,8 +5,8 @@ namespace Utility.UnityUtility.ObjectUtility
 {
     public class DragObject : MonoBehaviour
     {
-        private Vector3 _mOffset;
-        private float _mZCoord;
+        private Vector3 _offset;
+        private float _zCoord;
         private Camera _camera;
         private Vector3 Pos => transform.position;
 
@@ -19,13 +19,13 @@ namespace Utility.UnityUtility.ObjectUtility
 
         private void OnMouseDown()
         {
-            _mZCoord = _camera.WorldToScreenPoint(Pos).z;
-            _mOffset = Pos - GetMouseAsWorldPoint();
+            _zCoord = _camera.WorldToScreenPoint(Pos).z;
+            _offset = Pos - GetMouseAsWorldPoint();
         }
 
         private void OnMouseDrag()
         {
-            Vector3 newPoint = GetMouseAsWorldPoint() + _mOffset;
+            Vector3 newPoint = GetMouseAsWorldPoint() + _offset;
             newPoint = CameraUtility.CameraUtility.ClampPointToViewportWithBorder(_camera, newPoint);
             transform.position = newPoint;
             OnPositionChanged?.Invoke(Pos);
@@ -34,7 +34,7 @@ namespace Utility.UnityUtility.ObjectUtility
         private Vector3 GetMouseAsWorldPoint()
         {
             Vector3 mousePoint = Input.mousePosition;
-            mousePoint.z = _mZCoord;
+            mousePoint.z = _zCoord;
             return _camera.ScreenToWorldPoint(mousePoint);
         }
     }

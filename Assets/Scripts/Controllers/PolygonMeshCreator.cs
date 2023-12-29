@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Controllers.Interfaces;
 using DataStructures;
 using Habrador_Computational_Geometry;
@@ -14,7 +15,7 @@ namespace Controllers
         private readonly IPolygonClippingController _polygonClippingController;
         private PolygonCollider2D _collider;
         private MeshFilter _meshFilter;
-        private List<Mesh> _meshes = new();
+        private readonly List<Mesh> _meshes = new();
 
         public PolygonMeshCreator(IPolygonClippingController polygonClippingController)
         {
@@ -24,9 +25,11 @@ namespace Controllers
 
         public void CreateMeshFromPolyVertexList(List<List<MyVector2>> finalPoly)
         {
+            _meshes.Clear();
             foreach (var poly in finalPoly)
             {
-                HashSet<Triangle2> triangulation = EarClipping.Triangulate(poly, null, false);
+                HashSet<Triangle2> triangulation = EarClipping.Triangulate(poly.Distinct().ToList(), false);
+                
                 if (triangulation == null)
                     continue;
 
@@ -41,7 +44,7 @@ namespace Controllers
                 combine[i].mesh = _meshes[i];
 
             Mesh finalMesh = new Mesh();
-            finalMesh.CombineMeshes(combine);
+            finalMesh.CombineMeshes(combine, true, false);
             _meshFilter.sharedMesh = finalMesh;
             
             // _collider.pathCount = finalPoly.Count;

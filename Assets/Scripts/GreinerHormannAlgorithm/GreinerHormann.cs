@@ -205,7 +205,7 @@ namespace GreinerHormannAlgorithm
                 }
 
                 safety++;
-                if (safety > 100000)
+                if (safety > 1000)
                     break;
             }
 
@@ -234,7 +234,7 @@ namespace GreinerHormannAlgorithm
                     break;
 
                 safety++;
-                if (safety > 100000)
+                if (safety > 1000)
                     break;
             }
         }
@@ -263,7 +263,7 @@ namespace GreinerHormannAlgorithm
                 }
 
                 safety++;
-                if (safety > 100000)
+                if (safety > 1000)
                     break;
             }
 
@@ -315,7 +315,7 @@ namespace GreinerHormannAlgorithm
                 insertAfterThisVertex = insertAfterThisVertex.Next;
 
                 safety++;
-                if (safety > 100000)
+                if (safety > 1000)
                     break;
             }
 
@@ -354,7 +354,7 @@ namespace GreinerHormannAlgorithm
                     break;
 
                 safety++;
-                if (safety > 100000)
+                if (safety > 1000)
                     break;
             }
         }

@@ -8,8 +8,8 @@ namespace Controllers
     public class PolygonViewUpdater : MonoBehaviour
     {
         [SerializeField] private float _updateFrequency = 0.05f;
-        private float _timeSinceLastUpdate = 0f;
-        private bool _isUpdateRequested = false;
+        private float _timeSinceLastUpdate;
+        private bool _isUpdateRequested;
         
         private List<List<MyVector2>> _finalPoly;
         private List<MyVector2> _polyA;

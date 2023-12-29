@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using DataStructures;
 using UnityEditor;
 using UnityEngine;
@@ -24,20 +25,23 @@ public class PolygonVertexInfoDebugVisualizer : MonoBehaviour
             _finalPoly.Add(poly.ToListV3());
     }
     
-    private void OnDrawGizmos()
+    public void OnDrawGizmos()
     {
         if(_finalPoly == null || _finalPoly.Count == 0)
             return;
-
+    
         foreach (var poly in _finalPoly)
         {
-            for (int i = 0; i < poly.Count; i++)
+            var set = poly.Distinct().ToList();
+            foreach (var v in set)
             {
-                var vertPos = poly[i];
-                Handles.Label(vertPos + Vector3.up * 0.2f, $"{i}");
+                Handles.Label(v + Vector3.up * 0.07f, $"{set.IndexOf(v)}");
             }
+            // for (int i = 0; i < poly.Count; i++)
+            // {
+            //     var vertPos = poly[i];
+            //     Handles.Label(vertPos + Vector3.up * 0.07f, $"{i}");
+            // }
         }
     }
-
-    
 }

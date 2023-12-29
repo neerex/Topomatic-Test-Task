@@ -12,6 +12,9 @@ namespace Utility
             float epsilon = float.Epsilon;
             bool isIntersecting = false;
 
+            // if (IsPointOnLine(a, b.P1) || IsPointOnLine(a, b.P2))
+            //     return false;
+
             float denominator = (b.P2.Y - b.P1.Y) * (a.P2.X - a.P1.X) - (b.P2.X - b.P1.X) * (a.P2.Y - a.P1.Y);
 
             //if denominator is 0 the lines are parallel
@@ -36,6 +39,19 @@ namespace Utility
             }
 
             return isIntersecting;
+        }
+
+        public static bool IsPointOnLine(Edge2 edge, MyVector2 point)
+        {
+            float epsilon = 0.01f;
+            var a_b = edge.P1 - edge.P2;
+            var a_p = edge.P1 - point;
+            var b_p = edge.P2 - point;
+            
+            var len = MyVector2.Magnitude(a_b);
+            var len2 = MyVector2.Magnitude(a_p) + MyVector2.Magnitude(b_p);
+            
+            return len > len2 - epsilon && len < len2 + epsilon;
         }
         
         public static MyVector2 GetLineLineIntersectionPoint(Edge2 a, Edge2 b)
@@ -78,7 +94,7 @@ namespace Utility
                 MyVector2 l2_p2 = polygonPoints[iPlusOne];
 
                 //Are the lines intersecting?
-                if (LineLine(new Edge2(l1_p1, l1_p2), new Edge2(l2_p1, l2_p2), includeEndPoints: true))
+                if (LineLine(new Edge2(l1_p1, l1_p2), new Edge2(l2_p1, l2_p2), includeEndPoints: false))
                     numberOfIntersections++;
             }
 
@@ -138,21 +154,7 @@ namespace Utility
             
             return isClockWise;
         }
-        
-        public static bool IsPointLeftOfVector(MyVector2 a, MyVector2 b, MyVector2 p)
-        {
-            float relationValue = GetPointInRelationToVectorValue(a, b, p);
-            bool isToLeft = true;
 
-            //to avoid floating point precision issues we can add a small value
-            float epsilon = float.Epsilon;
-
-            if (relationValue < 0f - epsilon) 
-                isToLeft = false;
-
-            return isToLeft;
-        }
-        
         public static LeftOnRight IsPoint_Left_On_Right_OfVector(MyVector2 a, MyVector2 b, MyVector2 p)
         {
             float relationValue = GetPointInRelationToVectorValue(a, b, p);
@@ -184,6 +186,7 @@ namespace Utility
         
         public static bool PointTriangle(Triangle2 t, MyVector2 p, bool includeBorder)
         {
+            includeBorder = false;
             //To avoid floating point precision issues we can add a small value
             float epsilon = float.Epsilon;
 
@@ -233,7 +236,7 @@ namespace Utility
             if (intersectionCases == IntersectionCases.IsInside)
             {
                 //Are these the two triangles forming a convex quadrilateral? Otherwise the edge cant be flipped
-                if (GeometryUtility.IsQuadrilateralConvex(a, b, c, d))
+                if (IsQuadrilateralConvex(a, b, c, d))
                 {
                     //If the new triangle after a flip is not better, then dont flip
                     //This will also stop the algorithm from ending up in an endless loop

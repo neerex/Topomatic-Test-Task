@@ -12,9 +12,9 @@ namespace Controllers
         private readonly IPolygonProvider _polygonProvider;
         
         private BooleanOperation _operation = BooleanOperation.Intersection;
-        private List<MyVector2> _polyA;
-        private List<MyVector2> _polyB;
-        private List<List<MyVector2>> _finalPolygon;
+        private List<MyVector2> _polyA = new();
+        private List<MyVector2> _polyB = new();
+        private List<List<MyVector2>> _finalPolygon = new();
         public event PolygonRecalculationHandler OnPolygonsRecalculation;
 
         public PolygonClippingController(IPolygonProvider polygonProvider)
@@ -24,6 +24,10 @@ namespace Controllers
 
         public void CalculatePolygons()
         {
+            _polyA.Clear();
+            _polyB.Clear();
+            _finalPolygon.Clear();
+            
             _polyA = _polygonProvider.GetPolyVertices(PolygonType.A);
             _polyB = _polygonProvider.GetPolyVertices(PolygonType.B);
             
