@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using Controllers.Interfaces;
 using DataStructures;
+using Habrador_Computational_Geometry;
 using UnityEngine;
 using Utility;
+using Utility.UnityUtility;
 
 namespace Controllers
 {
@@ -12,6 +14,7 @@ namespace Controllers
         private readonly IPolygonClippingController _polygonClippingController;
         private PolygonCollider2D _collider;
         private MeshFilter _meshFilter;
+        private List<Mesh> _meshes = new();
 
         public PolygonMeshCreator(IPolygonClippingController polygonClippingController)
         {
@@ -21,14 +24,34 @@ namespace Controllers
 
         public void CreateMeshFromPolyVertexList(List<List<MyVector2>> finalPoly)
         {
-            _collider.pathCount = finalPoly.Count;
-            for (int i = 0; i < finalPoly.Count; i++)
+            foreach (var poly in finalPoly)
             {
-                var path = CreatePath(finalPoly[i]);
-                _collider.SetPath(i, path);
+                HashSet<Triangle2> triangulation = EarClipping.Triangulate(poly, null, false);
+                if (triangulation == null)
+                    continue;
+
+                //Convert from triangle to mesh
+                Mesh mesh = MeshUtility.Triangles2ToMesh(triangulation, false);
+                _meshes.Add(mesh);
             }
-            Mesh mesh = _collider.CreateMesh(true, true);
-            _meshFilter.sharedMesh = mesh;
+            
+            CombineInstance[] combine = new CombineInstance[_meshes.Count];
+
+            for (int i = 0; i < _meshes.Count; i++) 
+                combine[i].mesh = _meshes[i];
+
+            Mesh finalMesh = new Mesh();
+            finalMesh.CombineMeshes(combine);
+            _meshFilter.sharedMesh = finalMesh;
+            
+            // _collider.pathCount = finalPoly.Count;
+            // for (int i = 0; i < finalPoly.Count; i++)
+            // {
+            //     var path = CreatePath(finalPoly[i]);
+            //     _collider.SetPath(i, path);
+            // }
+            // Mesh mesh = _collider.CreateMesh(true, true);
+            // _meshFilter.sharedMesh = mesh;
         }
 
         private Vector2[] CreatePath(List<MyVector2> poly)
