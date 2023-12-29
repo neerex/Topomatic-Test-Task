@@ -14,8 +14,8 @@ namespace Controllers
 
         public void Initialize(IPolygonClippingController polygonClippingController)
         {
-            var initialVertexesA = _polyAParent.GetComponentsInChildren<VertexView>();
-            var initialVertexesB = _polyBParent.GetComponentsInChildren<VertexView>();
+            VertexView[] initialVertexesA = _polyAParent.GetComponentsInChildren<VertexView>();
+            VertexView[] initialVertexesB = _polyBParent.GetComponentsInChildren<VertexView>();
 
             foreach (VertexView vertexView in initialVertexesA) 
                 vertexView.Initialize(polygonClippingController);

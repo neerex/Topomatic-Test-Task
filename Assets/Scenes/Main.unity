@@ -276,6 +276,7 @@ MonoBehaviour:
   _polygonDataProvider: {fileID: 661556861}
   _polygonManipulationWindow: {fileID: 1404248859}
   _polygonConnectionDrawer: {fileID: 1776739565}
+  _polygonViewUpdater: {fileID: 2116141380}
 --- !u!4 &260733055
 Transform:
   m_ObjectHideFlags: 0
@@ -2983,6 +2984,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1656345938}
+  - component: {fileID: 1656345939}
   m_Layer: 0
   m_Name: Controllers
   m_TagString: Untagged
@@ -3005,8 +3007,21 @@ Transform:
   m_Children:
   - {fileID: 1776739564}
   - {fileID: 661556860}
+  - {fileID: 2116141379}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1656345939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1656345936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4003560362a30d44b5932e6252a3822, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1712084943
 GameObject:
   m_ObjectHideFlags: 0
@@ -4110,6 +4125,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2090548311}
   m_CullTransparentMesh: 1
+--- !u!1 &2116141378
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2116141379}
+  - component: {fileID: 2116141380}
+  m_Layer: 0
+  m_Name: PolygonViewUpdater
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2116141379
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2116141378}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1656345938}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2116141380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2116141378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34dff6d9b741472b992b50baf5bf2e9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _updateFrequency: 0.05
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

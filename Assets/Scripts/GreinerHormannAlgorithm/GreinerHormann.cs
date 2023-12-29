@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DataStructures;
+using UnityEngine;
 using Utility;
 using GeometryUtility = Utility.GeometryUtility;
 
@@ -204,7 +205,6 @@ namespace GreinerHormannAlgorithm
                 }
 
                 safety++;
-
                 if (safety > 100000)
                     break;
             }
@@ -234,7 +234,6 @@ namespace GreinerHormannAlgorithm
                     break;
 
                 safety++;
-
                 if (safety > 100000)
                     break;
             }
@@ -264,7 +263,6 @@ namespace GreinerHormannAlgorithm
                 }
 
                 safety++;
-                
                 if (safety > 100000)
                     break;
             }
@@ -317,7 +315,6 @@ namespace GreinerHormannAlgorithm
                 insertAfterThisVertex = insertAfterThisVertex.Next;
 
                 safety++;
-
                 if (safety > 100000)
                     break;
             }
@@ -357,7 +354,6 @@ namespace GreinerHormannAlgorithm
                     break;
 
                 safety++;
-
                 if (safety > 100000)
                     break;
             }

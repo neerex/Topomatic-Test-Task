@@ -127,5 +127,244 @@ namespace Utility
 
             return new MyVector2(Math.Abs(minX), Math.Abs(minY));
         }
+        
+        public static bool IsTriangleOrientedClockwise(MyVector2 p1, MyVector2 p2, MyVector2 p3)
+        {
+            bool isClockWise = true;
+            float determinant = p1.X * p2.Y + p3.X * p1.Y + p2.X * p3.Y - p1.X * p3.Y - p3.X * p2.Y - p2.X * p1.Y;
+            
+            if (determinant > 0f) 
+                isClockWise = false;
+            
+            return isClockWise;
+        }
+        
+        public static bool IsPointLeftOfVector(MyVector2 a, MyVector2 b, MyVector2 p)
+        {
+            float relationValue = GetPointInRelationToVectorValue(a, b, p);
+            bool isToLeft = true;
+
+            //to avoid floating point precision issues we can add a small value
+            float epsilon = float.Epsilon;
+
+            if (relationValue < 0f - epsilon) 
+                isToLeft = false;
+
+            return isToLeft;
+        }
+        
+        public static LeftOnRight IsPoint_Left_On_Right_OfVector(MyVector2 a, MyVector2 b, MyVector2 p)
+        {
+            float relationValue = GetPointInRelationToVectorValue(a, b, p);
+            float epsilon = float.Epsilon;
+
+            //To the right
+            if (relationValue < -epsilon)
+                return LeftOnRight.Right;
+            
+            //To the left
+            if (relationValue > epsilon)
+                return LeftOnRight.Left;
+            
+            //= 0 -> on the line
+            return LeftOnRight.On;
+        }
+        
+        public static float GetPointInRelationToVectorValue(MyVector2 a, MyVector2 b, MyVector2 p)
+        {
+            float x1 = a.X - p.X;
+            float x2 = a.Y - p.Y;
+            float y1 = b.X - p.X;
+            float y2 = b.Y - p.Y;
+
+            float determinant = MathUtility.Det2(x1, x2, y1, y2);
+
+            return determinant;
+        }
+        
+        public static bool PointTriangle(Triangle2 t, MyVector2 p, bool includeBorder)
+        {
+            //To avoid floating point precision issues we can add a small value
+            float epsilon = float.Epsilon;
+
+            //Based on Barycentric coordinates
+            float denominator = (t.p2.Y - t.p3.Y) * (t.p1.X - t.p3.X) + (t.p3.X - t.p2.X) * (t.p1.Y - t.p3.Y);
+
+            float a = ((t.p2.Y - t.p3.Y) * (p.X - t.p3.X) + (t.p3.X - t.p2.X) * (p.Y - t.p3.Y)) / denominator;
+            float b = ((t.p3.Y - t.p1.Y) * (p.X - t.p3.X) + (t.p1.X - t.p3.X) * (p.Y - t.p3.Y)) / denominator;
+            float c = 1 - a - b;
+
+            bool isWithinTriangle = false;
+
+            if (includeBorder)
+            {
+                float zero = 0f - epsilon;
+                float one = 1f + epsilon;
+
+                //The point is within the triangle or on the border
+                if (a >= zero && a <= one && b >= zero && b <= one && c >= zero && c <= one)
+                {
+                    isWithinTriangle = true;
+                }
+            }
+            else
+            {
+                float zero = 0f + epsilon;
+                float one = 1f - epsilon;
+
+                //The point is within the triangle
+                if (a > zero && a < one && b > zero && b < one && c > zero && c < one)
+                {
+                    isWithinTriangle = true;
+                }
+            }
+
+            return isWithinTriangle;
+        }
+        
+        public static bool ShouldFlipEdge(MyVector2 a, MyVector2 b, MyVector2 c, MyVector2 d)
+        {
+            bool shouldFlipEdge = false;
+
+            //Use the circle test to test if we need to flip this edge
+            //We should flip if d is inside a circle formed by a, b, c
+            IntersectionCases intersectionCases = PointCircle(a, b, c, d);
+
+            if (intersectionCases == IntersectionCases.IsInside)
+            {
+                //Are these the two triangles forming a convex quadrilateral? Otherwise the edge cant be flipped
+                if (GeometryUtility.IsQuadrilateralConvex(a, b, c, d))
+                {
+                    //If the new triangle after a flip is not better, then dont flip
+                    //This will also stop the algorithm from ending up in an endless loop
+                    IntersectionCases intersectionCases2 = PointCircle(b, c, d, a);
+
+                    if (intersectionCases2 == IntersectionCases.IsOnEdge || intersectionCases2 == IntersectionCases.IsInside)
+                    {
+                        shouldFlipEdge = false;
+                    }
+                    else
+                    {
+                        shouldFlipEdge = true;
+                    }
+                }
+            }
+
+            return shouldFlipEdge;
+        }
+        
+        public static IntersectionCases PointCircle(MyVector2 a, MyVector2 b, MyVector2 c, MyVector2 testPoint)
+        {
+            //Center of circle
+            MyVector2 circleCenter = CalculateCircleCenter(a, b, c);
+
+            //The radius sqr of the circle
+            float radiusSqr = MyVector2.SqrDistance(a, circleCenter);
+
+            //The distance sqr from the point to the circle center
+            float distPointCenterSqr = MyVector2.SqrDistance(testPoint, circleCenter);
+            
+            //Add/remove a small value becuse we will never be exactly on the edge because of floating point precision issues
+            //Mutiply epsilon by two because we are using sqr root???
+            if (distPointCenterSqr < radiusSqr - float.Epsilon * 2f)
+            {
+                return IntersectionCases.IsInside;
+            }
+
+            if (distPointCenterSqr > radiusSqr + float.Epsilon * 2f)
+            {
+                return IntersectionCases.NoIntersection;
+            }
+
+            return IntersectionCases.IsOnEdge;
+        }
+        
+        public static bool IsQuadrilateralConvex(MyVector2 a, MyVector2 b, MyVector2 c, MyVector2 d)
+        {
+            bool isConvex = false;
+
+            bool abc = IsTriangleOrientedClockwise(a, b, c);
+            bool abd = IsTriangleOrientedClockwise(a, b, d);
+            bool bcd = IsTriangleOrientedClockwise(b, c, d);
+            bool cad = IsTriangleOrientedClockwise(c, a, d);
+
+            if (abc && abd && bcd & !cad)
+            {
+                isConvex = true;
+            }
+            else if (abc && abd && !bcd & cad)
+            {
+                isConvex = true;
+            }
+            else if (abc && !abd && bcd & cad)
+            {
+                isConvex = true;
+            }
+            //The opposite sign, which makes everything inverted
+            else if (!abc && !abd && !bcd & cad)
+            {
+                isConvex = true;
+            }
+            else if (!abc && !abd && bcd & !cad)
+            {
+                isConvex = true;
+            }
+            else if (!abc && abd && !bcd & !cad)
+            {
+                isConvex = true;
+            }
+
+            return isConvex;
+        }
+        
+        public static MyVector2 CalculateCircleCenter(MyVector2 a, MyVector2 b, MyVector2 c)
+        {
+            //Make sure the triangle a-b-c is counterclockwise
+            if (!IsTriangleOrientedClockwise(a, b, c)) 
+                (a, b) = (b, a);
+
+            //The area of the triangle
+            float X_1 = b.X - a.X;
+            float X_2 = c.X - a.X;
+            float Y_1 = b.Y - a.Y;
+            float Y_2 = c.Y - a.Y;
+
+            float A = 0.5f * MathUtility.Det2(X_1, Y_1, X_2, Y_2);
+
+            float L_10_square = MyVector2.SqrMagnitude(b - a);
+            float L_20_square = MyVector2.SqrMagnitude(c - a);
+
+            float one_divided_by_4A = 1f / (4f * A);
+
+            float x = a.X + one_divided_by_4A * ((Y_2 * L_10_square) - (Y_1 * L_20_square));
+            float y = a.Y + one_divided_by_4A * ((X_1 * L_20_square) - (X_2 * L_10_square));
+
+            MyVector2 center = new MyVector2(x, y);
+
+            return center;
+        }
+        
+        public static float GetSignedDistanceFromPointToPlane(MyVector2 pointPos, Plane2 plane) => 
+            MyVector2.Dot(plane.normal, pointPos - plane.pos);
+    }
+    
+    public enum LeftOnRight
+    {
+        Left = 0, 
+        On = 1, 
+        Right = 2
+    }
+    public enum OutsideOnInside
+    {
+        Outside = 0, 
+        On = 1, 
+        Inside = 2
+    }
+    
+    public enum IntersectionCases
+    {
+        IsInside,
+        IsOnEdge,
+        NoIntersection
     }
 }
