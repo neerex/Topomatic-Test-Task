@@ -2,13 +2,13 @@
 {
     public class Plane2
     {
-        public MyVector2 pos;
-        public MyVector2 normal;
+        public readonly MyVector2 Pos;
+        public readonly MyVector2 Normal;
         
         public Plane2(MyVector2 pos, MyVector2 normal)
         {
-            this.pos = pos;
-            this.normal = normal;
+            Pos = pos;
+            Normal = normal;
         }
     }
 }

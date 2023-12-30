@@ -15,7 +15,7 @@ namespace Bootstrap
         private void Start()
         {
             IPolygonClippingController polygonClippingController = new PolygonClippingController(_polygonDataProvider);
-            IPolygonMeshCreator polygonMeshCreator = new PolygonMeshCreator(polygonClippingController);
+            IPolygonMeshCreator polygonMeshCreator = new PolygonMeshCreator();
             
             _polygonViewUpdater.Initialize(polygonClippingController, polygonMeshCreator, _polygonConnectionDrawer);
             _polygonDataProvider.Initialize(polygonClippingController);

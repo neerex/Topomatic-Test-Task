@@ -1,20 +1,12 @@
+using System;
 using System.Collections.Generic;
 using DataStructures;
-using UnityEngine;
 using Utility;
 using GeometryUtility = Utility.GeometryUtility;
 
-
-namespace Habrador_Computational_Geometry
+namespace TriangulationAlgorithm.EarClipping
 {
     //Triangulate a concave hull (with holes) by using an algorithm called Ear Clipping
-    //Based on: 
-    //- "Triangulation by Ear Clipping" by David Eberly
-    //- "Ear-Clipping Based Algorithms of Generating High-quality Polygon Triangulation" by people
-    //Can also triangulate convex hulls but there are faster algorithms for that 
-    //This algorithm is called ear clipping and it's O(n*n) 
-    //Another common algorithm is dividing it into trapezoids and it's O(n log n)
-    //One can maybe do it in O(n) time but no such version is known
     public static class EarClipping
     {
         //The points on the hull (vertices) should be ordered counter-clockwise (and no doubles)
@@ -23,10 +15,8 @@ namespace Habrador_Computational_Geometry
         {
             //Validate the data
             if (vertices == null || vertices.Count <= 2)
-            {
-                Debug.LogWarning("Can't triangulate with Ear Clipping because too few vertices on the hull");
                 return null;
-            }
+            
             vertices.Reverse();
 
             //Step 0. Create a linked list connecting all vertices with each other which will make the calculations easier and faster
@@ -42,9 +32,8 @@ namespace Habrador_Computational_Geometry
             for (int i = 0; i < verticesLinked.Count; i++)
             {
                 LinkedVertex v = verticesLinked[i];
-
-                v.prevLinkedVertex = verticesLinked[MathUtility.ClampListIndex(i - 1, verticesLinked.Count)];
-                v.nextLinkedVertex = verticesLinked[MathUtility.ClampListIndex(i + 1, verticesLinked.Count)];
+                v.PrevLinkedVertex = verticesLinked[MathUtility.ClampListIndex(i - 1, verticesLinked.Count)];
+                v.NextLinkedVertex = verticesLinked[MathUtility.ClampListIndex(i + 1, verticesLinked.Count)];
             }
 
             //Step 1. Find:
@@ -60,13 +49,9 @@ namespace Habrador_Computational_Geometry
                 bool isConvex = IsVertexConvex(v);
 
                 if (isConvex)
-                {
                     convexVerts.Add(v);
-                }
                 else
-                {
                     reflectVerts.Add(v);
-                }
             }
 
             //Step 2. Find the initial ears
@@ -76,10 +61,8 @@ namespace Habrador_Computational_Geometry
             foreach (LinkedVertex v in convexVerts)
             {
                 //And we only need to test the reflect vertices
-                if (IsVertexEar(v, reflectVerts))
-                {
+                if (IsVertexEar(v, reflectVerts)) 
                     earVerts.Add(v);
-                }
             }
 
             //Step 3. Build the triangles
@@ -96,97 +79,58 @@ namespace Habrador_Computational_Geometry
             {
                 //Pick an ear vertex and form a triangle
                 LinkedVertex ear = GetEarVertex(earVerts, optimizeTriangles);
-                //Debug.Log($"{earVerts.Count} ear verts");
                 if (ear == null)
-                {
-                    //Debug.Log("Cant find ear");
                     break;
-                }
 
-                LinkedVertex v_prev = ear.prevLinkedVertex;
-                LinkedVertex v_next = ear.nextLinkedVertex;
+                LinkedVertex v_prev = ear.PrevLinkedVertex;
+                LinkedVertex v_next = ear.NextLinkedVertex;
 
-                Triangle2 t = new Triangle2(ear.pos, v_prev.pos, v_next.pos);
+                Triangle2 t = new Triangle2(ear.Pos, v_prev.Pos, v_next.Pos);
 
                 //Try to flip this triangle according to Delaunay triangulation
                 if (optimizeTriangles)
-                {
-                    OptimizeTriangle(t, triangulation);    
-                }
+                    OptimizeTriangle(t, triangulation);
                 else
-                {
                     triangulation.Add(t);
-                }
-                
+
                 //Check if we have found all triangles
                 //This should also prevent us from getting stuck in an infinite loop
                 if (triangulation.Count >= maxTriangles)
-                {
                     break;
-                }
-
-
+                
                 //If we havent found all triangles we have to reconfigure the data structure
-
                 //Remove the ear we used to build a triangle
                 convexVerts.Remove(ear);
                 earVerts.Remove(ear);
 
                 //Reconnect the vertices because one vertex has now been removed
-                v_prev.nextLinkedVertex = v_next;
-                v_next.prevLinkedVertex = v_prev;
+                v_prev.NextLinkedVertex = v_next;
+                v_next.PrevLinkedVertex = v_prev;
 
                 //Reconfigure the adjacent vertices
                 ReconfigureAdjacentVertex(v_prev, convexVerts, reflectVerts, earVerts);
                 ReconfigureAdjacentVertex(v_next, convexVerts, reflectVerts, earVerts);
                 
-                safety += 1;
+                safety++;
 
-                if (safety > 50000)
-                {
-                    Debug.Log("Ear Clipping is stuck in an infinite loop!");
-
+                if (safety > 5000)
                     break;
-                }
             }
-
-
-
-            //Step 4. Improve triangulation
-            //Some triangles may be too sharp, and if you want a nice looking triangle, you should try to swap edges
-            //according to Delaunay triangulation
-            //A report suggests that should be done while createing the triangulation
-            //But maybe it's easier to do it afterwards with some standardized constrained Delaunay triangulation?
-            //But that would also be stupid because then we could have used the constrained Delaunay from the beginning!
-
-
             return triangulation;
         }
-
-
-
+        
         //Optimize a new triangle according to Delaunay triangulation
         //TODO: This process would have been easier if we had used the HalfEdge data structure
         private static void OptimizeTriangle(Triangle2 t, HashSet<Triangle2> triangulation)
         {
-            bool hasOppositeEdge;
-
-            Triangle2 tOpposite;
-
-            Edge2 edgeToSwap;
-
-            FindEdgeInTriangulation(t, triangulation, out hasOppositeEdge, out tOpposite, out edgeToSwap);
+            FindEdgeInTriangulation(t, triangulation, out var hasOppositeEdge, out var tOpposite, out var edgeToSwap);
 
             //If it has no opposite edge we just add triangle to the triangulation because it can't be improved
             if (!hasOppositeEdge)
             {
                 triangulation.Add(t);
-
                 return;
             }
-
-            //Debug.Log("Has opposite edge");
-
             //Step 3. Check if we should swap this edge according to Delaunay triangulation rules
             //a, b, c belongs to the triangle and d is the point on the other triangle
             //a-c is the edge, which is important so we can flip it, by making the edge b-d
@@ -209,47 +153,38 @@ namespace Habrador_Computational_Geometry
 
                 triangulation.Add(t1);
                 triangulation.Add(t2);
-
-                //Debug.Log("Flipped edge");
             }
             else
             {
                 triangulation.Add(t);
             }
         }
-
-
-
+        
         //Find an edge in a triangulation and return the triangle the edge is attached to
         private static void FindEdgeInTriangulation(Triangle2 tNew, HashSet<Triangle2> triangulation, out bool hasOppositeEdge, out Triangle2 tOpposite, out Edge2 edgeToSwap)
         {
             //Step 1. Find the triangle's biggest interior angle and its opposite edge
-            float angleP1 = CalculateInteriorAngle(tNew.p3, tNew.p1, tNew.p2);
-            float angleP2 = CalculateInteriorAngle(tNew.p1, tNew.p2, tNew.p3);
-            float angleP3 = Mathf.PI - (angleP1 + angleP2);
+            float angleP1 = CalculateInteriorAngle(tNew.P3, tNew.P1, tNew.P2);
+            float angleP2 = CalculateInteriorAngle(tNew.P1, tNew.P2, tNew.P3);
+            float angleP3 = (float)Math.PI - (angleP1 + angleP2);
 
-            MyVector2 vertexWithBiggestInteriorAngle = tNew.p1;
+            MyVector2 vertexWithBiggestInteriorAngle = tNew.P1;
 
             if (angleP2 > angleP1)
             {
-                vertexWithBiggestInteriorAngle = tNew.p2;
+                vertexWithBiggestInteriorAngle = tNew.P2;
 
-                if (angleP3 > angleP2)
-                {
-                    vertexWithBiggestInteriorAngle = tNew.p3;
-                }
+                if (angleP3 > angleP2) 
+                    vertexWithBiggestInteriorAngle = tNew.P3;
             }
             else if (angleP3 > angleP1)
             {
-                vertexWithBiggestInteriorAngle = tNew.p3;
+                vertexWithBiggestInteriorAngle = tNew.P3;
             }
-
             edgeToSwap = tNew.FindOppositeEdgeToVertex(vertexWithBiggestInteriorAngle);
-
-
+            
             //Step 2. Check if this edge exists among the already generated triangles, which means we have a neighbor
             hasOppositeEdge = false;
-
             tOpposite = new Triangle2();
 
             foreach (Triangle2 tTest in triangulation)
@@ -257,16 +192,12 @@ namespace Habrador_Computational_Geometry
                 if (tTest.IsEdgePartOfTriangle(edgeToSwap))
                 {
                     hasOppositeEdge = true;
-
                     tOpposite = tTest;
-
                     break;
                 }
             }
         }
-
-
-
+        
         //Reconfigure an adjacent vertex that was used to build a triangle
         private static void ReconfigureAdjacentVertex(LinkedVertex v, HashSet<LinkedVertex> convexVerts, HashSet<LinkedVertex> reflectVerts, HashSet<LinkedVertex> earVerts)
         {
@@ -280,10 +211,8 @@ namespace Habrador_Computational_Geometry
                     convexVerts.Add(v);
 
                     //and possible a new ear
-                    if (IsVertexEar(v, reflectVerts))
-                    {
+                    if (IsVertexEar(v, reflectVerts)) 
                         earVerts.Add(v);
-                    }
                 }
             }
             //If an adjacent vertex was convex, it will always still be convex
@@ -293,19 +222,12 @@ namespace Habrador_Computational_Geometry
 
                 //This vertex was an ear but is no longer an ear
                 if (earVerts.Contains(v) && !isEar)
-                {
                     earVerts.Remove(v);
-                }
-                //This vertex wasn't an ear but has now become an ear
-                else if (isEar)
-                {
+                else if (isEar) 
                     earVerts.Add(v);
-                }
             }
         }
-
-
-
+        
         //Get the best ear vertex
         private static LinkedVertex GetEarVertex(HashSet<LinkedVertex> earVertices, bool optimizeTriangles)
         {
@@ -314,7 +236,7 @@ namespace Habrador_Computational_Geometry
             //To get better looking triangles we should always get the ear with the smallest interior angle
             if (optimizeTriangles)
             {
-                float smallestInteriorAngle = Mathf.Infinity;
+                float smallestInteriorAngle = float.MaxValue;
 
                 foreach (LinkedVertex v in earVertices)
                 {
@@ -323,7 +245,6 @@ namespace Habrador_Computational_Geometry
                     if (interiorAngle < smallestInteriorAngle)
                     {
                         bestEarVertex = v;
-
                         smallestInteriorAngle = interiorAngle;
                     }
                 }
@@ -334,24 +255,20 @@ namespace Habrador_Computational_Geometry
                 foreach (LinkedVertex v in earVertices)
                 {
                     bestEarVertex = v;
-
                     break;
                 }
             }
-
-
+            
             return bestEarVertex;
         }
-
-
-
+        
         //Is a vertex an ear?
         private static bool IsVertexEar(LinkedVertex vertex, HashSet<LinkedVertex> reflectVertices)
         {
             //Consider the triangle
-            MyVector2 p_prev = vertex.prevLinkedVertex.pos;
-            MyVector2 p = vertex.pos;
-            MyVector2 p_next = vertex.nextLinkedVertex.pos;
+            MyVector2 p_prev = vertex.PrevLinkedVertex.Pos;
+            MyVector2 p = vertex.Pos;
+            MyVector2 p_next = vertex.NextLinkedVertex.Pos;
 
             Triangle2 t = new Triangle2(p_prev, p, p_next);
 
@@ -359,34 +276,26 @@ namespace Habrador_Computational_Geometry
             //We only need to check the reflect vertices
             foreach (LinkedVertex otherVertex in reflectVertices)
             {
-                MyVector2 test_p = otherVertex.pos;
+                MyVector2 test_p = otherVertex.Pos;
 
                 //Dont compare with any of the vertices the triangle consist of
                 if (test_p.Equals(p_prev) || test_p.Equals(p) || test_p.Equals(p_next))
-                {
                     continue;
-                }
 
                 //If a relect vertex intersects with the triangle, then this vertex is not an ear
-                if (GeometryUtility.PointTriangle(t, test_p, includeBorder: true))
-                {
+                if (GeometryUtility.PointTriangle(t, test_p, includeBorder: false))
                     return false;
-                }
             }
-
-
             //No vertex is intersecting with the triangle, so this vertex must be an ear
             return true;
         }
-
-
-
+        
         //Is a vertex convex? (if not its concave or neither if its a straight line)
         private static bool IsVertexConvex(LinkedVertex v)
         {
-            MyVector2 p_prev = v.prevLinkedVertex.pos;
-            MyVector2 p = v.pos;
-            MyVector2 p_next = v.nextLinkedVertex.pos;
+            MyVector2 p_prev = v.PrevLinkedVertex.Pos;
+            MyVector2 p = v.Pos;
+            MyVector2 p_next = v.NextLinkedVertex.Pos;
 
             return IsVertexConvex(p_prev, p, p_next);
         }
@@ -394,38 +303,21 @@ namespace Habrador_Computational_Geometry
         public static bool IsVertexConvex(MyVector2 p_prev, MyVector2 p, MyVector2 p_next)
         {
             float interiorAngle = CalculateInteriorAngle(p_prev, p, p_next);
-
-            /*
-            //Colinear point (pi = 180 degrees)
-            if (Mathf.Abs(interiorAngle - Mathf.PI) <= MathUtility.EPSILON)
-            {
-                //Is it concave or convex? God knows!
-                //According to a paper, the vertex is convex if the interior angle is less than 180 degrees
-                //One can remove them if they cause trouble (the triangulation will still fill the area)
-                //And maybe add them back at the end by splitting triangles
-                return false;
-            }
-            */
+            
             //Convex
-            if (interiorAngle < Mathf.PI)
-            {
+            if (interiorAngle < Math.PI)
                 return true;
-            }
+            
             //Concave
-            else
-            {
-                return false;
-            }
+            return false;
         }
-
-
-
+        
         //Get interior angle (the angle within the polygon) of a vertex
         private static float CalculateInteriorAngle(LinkedVertex v)
         {
-            MyVector2 p_prev = v.prevLinkedVertex.pos;
-            MyVector2 p = v.pos;
-            MyVector2 p_next = v.nextLinkedVertex.pos;
+            MyVector2 p_prev = v.PrevLinkedVertex.Pos;
+            MyVector2 p = v.Pos;
+            MyVector2 p_next = v.NextLinkedVertex.Pos;
 
             return CalculateInteriorAngle(p_prev, p, p_next);
         }
@@ -442,12 +334,10 @@ namespace Habrador_Computational_Geometry
             float angle = MathUtility.AngleFromToCCW(p_to_p_prev, p_to_p_next);
 
             //The interior angle is the opposite of the outside angle
-            float interiorAngle = (Mathf.PI * 2f) - angle;
+            float interiorAngle = (float)Math.PI * 2f - angle;
 
             return interiorAngle;
         }
-
-
 
         //Count vertices that are linked to each other in a looping way
         private static int CountLinkedVertices(LinkedVertex startVertex)
@@ -458,35 +348,18 @@ namespace Habrador_Computational_Geometry
 
             while (true)
             {
-                currentVertex = currentVertex.nextLinkedVertex;
+                currentVertex = currentVertex.NextLinkedVertex;
             
                 if (currentVertex == startVertex)
-                {
                     break;
-                }
-            
-                counter += 1;
-            
-                if (counter > 50000)
-                {
-                    Debug.Log("Stuck in infinite loop!");
 
+                counter++;
+            
+                if (counter > 5000)
                     break;
-                }
             }
 
             return counter;
-        }
-
-
-
-        //Debug stuff
-        private static void DisplayVertices(List<LinkedVertex> vertices)
-        {
-            foreach (LinkedVertex v in vertices)
-            {
-                Debug.DrawLine(v.pos.ToVector3(), Vector3.zero, Color.blue, 3f);
-            }
         }
     }
 }

@@ -165,46 +165,16 @@ namespace Utility
             return isClockWise;
         }
 
-        public static LeftOnRight IsPoint_Left_On_Right_OfVector(MyVector2 a, MyVector2 b, MyVector2 p)
-        {
-            float relationValue = GetPointInRelationToVectorValue(a, b, p);
-            float epsilon = float.Epsilon;
-
-            //To the right
-            if (relationValue < -epsilon)
-                return LeftOnRight.Right;
-            
-            //To the left
-            if (relationValue > epsilon)
-                return LeftOnRight.Left;
-            
-            //= 0 -> on the line
-            return LeftOnRight.On;
-        }
-        
-        public static float GetPointInRelationToVectorValue(MyVector2 a, MyVector2 b, MyVector2 p)
-        {
-            float x1 = a.X - p.X;
-            float x2 = a.Y - p.Y;
-            float y1 = b.X - p.X;
-            float y2 = b.Y - p.Y;
-
-            float determinant = MathUtility.Det2(x1, x2, y1, y2);
-
-            return determinant;
-        }
-        
         public static bool PointTriangle(Triangle2 t, MyVector2 p, bool includeBorder)
         {
-            includeBorder = false;
             //To avoid floating point precision issues we can add a small value
             float epsilon = float.Epsilon;
 
             //Based on Barycentric coordinates
-            float denominator = (t.p2.Y - t.p3.Y) * (t.p1.X - t.p3.X) + (t.p3.X - t.p2.X) * (t.p1.Y - t.p3.Y);
+            float denominator = (t.P2.Y - t.P3.Y) * (t.P1.X - t.P3.X) + (t.P3.X - t.P2.X) * (t.P1.Y - t.P3.Y);
 
-            float a = ((t.p2.Y - t.p3.Y) * (p.X - t.p3.X) + (t.p3.X - t.p2.X) * (p.Y - t.p3.Y)) / denominator;
-            float b = ((t.p3.Y - t.p1.Y) * (p.X - t.p3.X) + (t.p1.X - t.p3.X) * (p.Y - t.p3.Y)) / denominator;
+            float a = ((t.P2.Y - t.P3.Y) * (p.X - t.P3.X) + (t.P3.X - t.P2.X) * (p.Y - t.P3.Y)) / denominator;
+            float b = ((t.P3.Y - t.P1.Y) * (p.X - t.P3.X) + (t.P1.X - t.P3.X) * (p.Y - t.P3.Y)) / denominator;
             float c = 1 - a - b;
 
             bool isWithinTriangle = false;
@@ -215,10 +185,8 @@ namespace Utility
                 float one = 1f + epsilon;
 
                 //The point is within the triangle or on the border
-                if (a >= zero && a <= one && b >= zero && b <= one && c >= zero && c <= one)
-                {
+                if (a >= zero && a <= one && b >= zero && b <= one && c >= zero && c <= one) 
                     isWithinTriangle = true;
-                }
             }
             else
             {
@@ -226,10 +194,8 @@ namespace Utility
                 float one = 1f - epsilon;
 
                 //The point is within the triangle
-                if (a > zero && a < one && b > zero && b < one && c > zero && c < one)
-                {
+                if (a > zero && a < one && b > zero && b < one && c > zero && c < one) 
                     isWithinTriangle = true;
-                }
             }
 
             return isWithinTriangle;
@@ -262,7 +228,6 @@ namespace Utility
                     }
                 }
             }
-
             return shouldFlipEdge;
         }
         
@@ -280,14 +245,10 @@ namespace Utility
             //Add/remove a small value becuse we will never be exactly on the edge because of floating point precision issues
             //Mutiply epsilon by two because we are using sqr root???
             if (distPointCenterSqr < radiusSqr - float.Epsilon * 2f)
-            {
                 return IntersectionCases.IsInside;
-            }
 
             if (distPointCenterSqr > radiusSqr + float.Epsilon * 2f)
-            {
                 return IntersectionCases.NoIntersection;
-            }
 
             return IntersectionCases.IsOnEdge;
         }
@@ -302,30 +263,18 @@ namespace Utility
             bool cad = IsTriangleOrientedClockwise(c, a, d);
 
             if (abc && abd && bcd & !cad)
-            {
                 isConvex = true;
-            }
             else if (abc && abd && !bcd & cad)
-            {
                 isConvex = true;
-            }
             else if (abc && !abd && bcd & cad)
-            {
                 isConvex = true;
-            }
             //The opposite sign, which makes everything inverted
             else if (!abc && !abd && !bcd & cad)
-            {
                 isConvex = true;
-            }
             else if (!abc && !abd && bcd & !cad)
-            {
                 isConvex = true;
-            }
-            else if (!abc && abd && !bcd & !cad)
-            {
+            else if (!abc && abd && !bcd & !cad) 
                 isConvex = true;
-            }
 
             return isConvex;
         }
@@ -358,26 +307,6 @@ namespace Utility
         }
         
         public static float GetSignedDistanceFromPointToPlane(MyVector2 pointPos, Plane2 plane) => 
-            MyVector2.Dot(plane.normal, pointPos - plane.pos);
-    }
-    
-    public enum LeftOnRight
-    {
-        Left = 0, 
-        On = 1, 
-        Right = 2
-    }
-    public enum OutsideOnInside
-    {
-        Outside = 0, 
-        On = 1, 
-        Inside = 2
-    }
-    
-    public enum IntersectionCases
-    {
-        IsInside,
-        IsOnEdge,
-        NoIntersection
+            MyVector2.Dot(plane.Normal, pointPos - plane.Pos);
     }
 }

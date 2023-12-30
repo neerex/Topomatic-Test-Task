@@ -1,4 +1,5 @@
 ﻿using Controllers.Interfaces;
+using DataStructures;
 using UnityEngine;
 using Utility.UnityUtility.CameraUtility;
 using View;
@@ -74,11 +75,5 @@ namespace Controllers
             Transform lastChild = parent.GetChild(childCount - 1);
             Object.DestroyImmediate(lastChild.gameObject);
         }
-    }
-
-    public enum PolygonType
-    {
-        A = 0,
-        B = 1
     }
 }

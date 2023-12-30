@@ -13,9 +13,9 @@ namespace Utility.UnityUtility
 
             foreach (Triangle2 t in triangles)
             {
-                triangles_3d.Add(new Triangle3(t.p1.ToMyVector3(meshHeight), 
-                    t.p2.ToMyVector3(meshHeight), 
-                    t.p3.ToMyVector3(meshHeight)));
+                triangles_3d.Add(new Triangle3(t.P1.ToMyVector3(meshHeight), 
+                    t.P2.ToMyVector3(meshHeight), 
+                    t.P3.ToMyVector3(meshHeight)));
             }
 
             //To mesh
@@ -34,32 +34,21 @@ namespace Utility.UnityUtility
         private static Mesh Triangle3ToCompressedMesh(HashSet<Triangle3> triangles)
         {
             if (triangles == null)
-            {
                 return null;
-            }
-            
+
             //Step 2. Create the list with unique vertices
             //A hashset will make it fast to check if a vertex already exists in the collection
             HashSet<MyVector3> uniqueVertices = new HashSet<MyVector3>();
 
             foreach (Triangle3 t in triangles)
             {
-                MyVector3 v1 = t.p1;
-                MyVector3 v2 = t.p2;
-                MyVector3 v3 = t.p3;
+                MyVector3 v1 = t.P1;
+                MyVector3 v2 = t.P2;
+                MyVector3 v3 = t.P3;
 
-                if (!uniqueVertices.Contains(v1))
-                {
-                    uniqueVertices.Add(v1);
-                }
-                if (!uniqueVertices.Contains(v2))
-                {
-                    uniqueVertices.Add(v2);
-                }
-                if (!uniqueVertices.Contains(v3))
-                {
-                    uniqueVertices.Add(v3);
-                }
+                if (!uniqueVertices.Contains(v1)) uniqueVertices.Add(v1);
+                if (!uniqueVertices.Contains(v2)) uniqueVertices.Add(v2);
+                if (!uniqueVertices.Contains(v3)) uniqueVertices.Add(v3);
             }
 
             //Create the list with all vertices
@@ -79,9 +68,9 @@ namespace Utility.UnityUtility
 
             foreach (Triangle3 t in triangles)
             {
-                MyVector3 v1 = t.p1;
-                MyVector3 v2 = t.p2;
-                MyVector3 v3 = t.p3;
+                MyVector3 v1 = t.P1;
+                MyVector3 v2 = t.P2;
+                MyVector3 v3 = t.P3;
 
                 meshTriangles.Add(vector2Positons[v1]);
                 meshTriangles.Add(vector2Positons[v2]);
@@ -123,9 +112,9 @@ namespace Utility.UnityUtility
 
             foreach (Triangle3 t in triangles)
             {
-                MyVector3 v1 = t.p1;
-                MyVector3 v2 = t.p2;
-                MyVector3 v3 = t.p3;
+                MyVector3 v1 = t.P1;
+                MyVector3 v2 = t.P2;
+                MyVector3 v3 = t.P3;
 
                 meshVertices.Add(v1);
                 meshVertices.Add(v2);

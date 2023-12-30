@@ -1,4 +1,6 @@
-﻿namespace Controllers.Interfaces
+﻿using DataStructures;
+
+namespace Controllers.Interfaces
 {
     public interface IPolygonPointController
     {

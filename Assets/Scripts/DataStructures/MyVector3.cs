@@ -2,7 +2,7 @@
 
 namespace DataStructures
 {
-    public struct MyVector3
+    public readonly struct MyVector3
     {
         public readonly float X;
         public readonly float Y;
@@ -32,9 +32,7 @@ namespace DataStructures
         public static float SqrMagnitude(MyVector3 a) => 
             a.X * a.X + a.Y * a.Y + a.Z * a.Z;
         
-        public override string ToString()
-        {
-            return $"X:{X} Y:{Y} Z:{Z}";
-        }
+        public override string ToString() => 
+            $"X:{X} Y:{Y} Z:{Z}";
     }
 }

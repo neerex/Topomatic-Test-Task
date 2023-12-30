@@ -7,7 +7,7 @@ namespace Controllers
 {
     public class PolygonViewUpdater : MonoBehaviour
     {
-        [SerializeField] private float _updateFrequency = 0.05f;
+        private readonly float _updateFrequency = 0.02f;
         private float _timeSinceLastUpdate;
         private bool _isUpdateRequested;
         
@@ -43,7 +43,6 @@ namespace Controllers
                     _isUpdateRequested = false;
                     UpdateVisuals();
                 }
-
             }
         }
 

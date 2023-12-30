@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Controllers.Interfaces;
 using DataStructures;
 using GreinerHormannAlgorithm;
-using UnityEngine;
-using Utility;
-using GeometryUtility = Utility.GeometryUtility;
-using Random = UnityEngine.Random;
 
 namespace Controllers
 {
