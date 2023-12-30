@@ -52,8 +52,8 @@ namespace UI
         
         private void ShowPolygonAreaCalculation(List<MyVector2> polyA, List<MyVector2> polyB, List<List<MyVector2>> finalPoly)
         {
-            float areaA = (float)Math.Round(GeometryUtility.PolygonArea(polyA), 3);
-            float areaB = (float)Math.Round(GeometryUtility.PolygonArea(polyB), 3);
+            float areaA = (float)Math.Round(GeometryUtility.PolygonArea(polyA), 1);
+            float areaB = (float)Math.Round(GeometryUtility.PolygonArea(polyB), 1);
 
             _areaAText.text = areaA.ToString(CultureInfo.InvariantCulture);
             _areaBText.text = areaB.ToString(CultureInfo.InvariantCulture);

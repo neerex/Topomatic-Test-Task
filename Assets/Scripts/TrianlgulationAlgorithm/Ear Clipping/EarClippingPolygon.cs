@@ -8,7 +8,7 @@ namespace Habrador_Computational_Geometry
     {
         public Polygon2 polygon;
 
-        //the vertex in the list with the maximum x-value
+        //the vertex in the list with the maximum X-value
         public MyVector2 maxX_Vert;
 
         //The position in the list where the maxX vert is 
@@ -28,7 +28,7 @@ namespace Habrador_Computational_Geometry
         }
 
 
-        //Find the vertex with the maximum x-value
+        //Find the vertex with the maximum X-value
         private void CalculateMaxXValue()
         {
             List<MyVector2> vertices = polygon.vertices;

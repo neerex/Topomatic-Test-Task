@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DataStructures;
-using UnityEngine;
 using Utility;
 using GeometryUtility = Utility.GeometryUtility;
 
@@ -12,6 +11,12 @@ namespace GreinerHormannAlgorithm
         public static List<List<MyVector2>> ClipPolygons(List<MyVector2> polyVector2, List<MyVector2> clipPolyVector2, BooleanOperation booleanOperation)
         {
             List<List<MyVector2>> finalPoly = new List<List<MyVector2>>();
+
+            //Step 0. Check if any verts from polyVector2 is intersecting with clipPoly edges
+            //if they are then align them correctly by adjusting verts on some epsilon value
+            //and do a reverse check also
+            CorrectPolyAlignments(ref polyVector2, clipPolyVector2);
+            CorrectPolyAlignments(ref clipPolyVector2, polyVector2);
             
             //Step 1. Initializing needed data structure
             List<ClipVertex> poly = InitDataStructure(polyVector2);
@@ -93,6 +98,41 @@ namespace GreinerHormannAlgorithm
             return finalPoly;
         }
         
+        private static void CorrectPolyAlignments(ref List<MyVector2> polyA, List<MyVector2> polyB)
+        {
+            float epsilon = 0.001f;
+            List<MyVector2> alignedPolyA = new List<MyVector2>();
+            
+            //form edges for cross check
+            var polyBEdges = new List<Edge2> {new Edge2(polyB[^1], polyB[0])};
+            for (int i = 1; i < polyB.Count; i++)
+            {
+                var prev = polyB[i - 1];
+                var curr = polyB[i];
+                polyBEdges.Add(new Edge2(prev, curr));
+            }
+
+            //check if edge is crossing point then adjust that point perpendicular to that line on small epsilon value
+            foreach (var p in polyA)
+            {
+                MyVector2 pWithAlignment = p;
+                foreach (var edge in polyBEdges)
+                {
+                    if (GeometryUtility.IsPointOnLine(edge, p))
+                    {
+                        MyVector3 edgeV3 = edge.Edge2ToMyV3();
+                        MyVector2 cross = MyVector3.Cross(edgeV3, new MyVector3(0,0,1)).ToMyVector2();
+                        cross = MyVector2.Normalize(cross);
+                        MyVector2 alignmentV = epsilon * cross;
+                        pWithAlignment += alignmentV;
+                    }
+                }
+                alignedPolyA.Add(pWithAlignment);
+            }
+
+            polyA = alignedPolyA;
+        }
+        
         //We may end up with several polygons, so this will split the connected list into one list per polygon
         private static void AddPolygonToList(List<ClipVertex> verticesToAdd, List<List<MyVector2>> finalPoly, bool shouldReverse)
         {
@@ -120,7 +160,7 @@ namespace GreinerHormannAlgorithm
             if (shouldReverse) 
                 finalPoly[^1].Reverse();
         }
-        
+
         //Get the clipped polygons: either the intersection or the !intersection
         //We might end up with more than one polygon and they are connected via ClipVertex NextPoly
         //To get the intersection, we should

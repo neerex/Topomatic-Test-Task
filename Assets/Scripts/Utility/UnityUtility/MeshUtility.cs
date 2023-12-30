@@ -13,9 +13,9 @@ namespace Utility.UnityUtility
 
             foreach (Triangle2 t in triangles)
             {
-                triangles_3d.Add(new Triangle3(t.p1.ToMyVector3_Yis3D(meshHeight), 
-                    t.p2.ToMyVector3_Yis3D(meshHeight), 
-                    t.p3.ToMyVector3_Yis3D(meshHeight)));
+                triangles_3d.Add(new Triangle3(t.p1.ToMyVector3(meshHeight), 
+                    t.p2.ToMyVector3(meshHeight), 
+                    t.p3.ToMyVector3(meshHeight)));
             }
 
             //To mesh
@@ -98,7 +98,7 @@ namespace Utility.UnityUtility
             {
                 MyVector3 v = meshVertices[i];
 
-                meshVerticesArray[i] = new Vector3(v.x, v.y, v.z);
+                meshVerticesArray[i] = new Vector3(v.X, v.Y, v.Z);
             }
 
             mesh.vertices = meshVerticesArray;
@@ -148,7 +148,7 @@ namespace Utility.UnityUtility
             {
                 MyVector3 v = meshVertices[i];
 
-                meshVerticesArray[i] = new Vector3(v.x, v.y, v.z);
+                meshVerticesArray[i] = new Vector3(v.X, v.Y, v.Z);
             }
 
             mesh.vertices = meshVerticesArray;

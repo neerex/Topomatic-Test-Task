@@ -37,11 +37,6 @@ public class PolygonVertexInfoDebugVisualizer : MonoBehaviour
             {
                 Handles.Label(v + Vector3.up * 0.07f, $"{set.IndexOf(v)}");
             }
-            // for (int i = 0; i < poly.Count; i++)
-            // {
-            //     var vertPos = poly[i];
-            //     Handles.Label(vertPos + Vector3.up * 0.07f, $"{i}");
-            // }
         }
     }
 }

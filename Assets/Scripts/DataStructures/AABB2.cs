@@ -1,20 +1,18 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Utility;
 
 namespace DataStructures
 {
     public struct AABB2
     {
-        public MyVector2 min;
-        public MyVector2 max;
-
-
+        public readonly MyVector2 min;
+        public readonly MyVector2 max;
+        
         //We know the min and max values
         public AABB2(float minX, float maxX, float minY, float maxY)
         {
-            this.min = new MyVector2(minX, minY);
-            this.max = new MyVector2(maxX, maxY);
+            min = new MyVector2(minX, minY);
+            max = new MyVector2(maxX, maxY);
         }
         
         //We have a list with points and want to find the min and max values

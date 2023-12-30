@@ -1,7 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Controllers.Interfaces;
 using DataStructures;
 using GreinerHormannAlgorithm;
+using UnityEngine;
+using Utility;
+using GeometryUtility = Utility.GeometryUtility;
+using Random = UnityEngine.Random;
 
 namespace Controllers
 {
@@ -30,7 +36,7 @@ namespace Controllers
             
             _polyA = _polygonProvider.GetPolyVertices(PolygonType.A);
             _polyB = _polygonProvider.GetPolyVertices(PolygonType.B);
-            
+
             _finalPolygon = GreinerHormann.ClipPolygons(_polyA, _polyB, _operation);
             OnPolygonsRecalculation?.Invoke(_polyA, _polyB, _finalPolygon);
         }

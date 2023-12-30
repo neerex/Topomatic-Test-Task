@@ -25,6 +25,9 @@ namespace DataStructures
         public static MyVector2 operator *(float b, MyVector2 a) => 
             new MyVector2(a.X * b, a.Y * b);
         
+        public static MyVector2 operator *(MyVector2 a, float b) => 
+            new MyVector2(a.X * b, a.Y * b);
+        
         public static float Magnitude(MyVector2 a) => 
             (float)Math.Sqrt(SqrMagnitude(a));
 
@@ -39,6 +42,11 @@ namespace DataStructures
             float v_magnitude = Magnitude(v);
             MyVector2 v_normalized = new MyVector2(v.X / v_magnitude, v.Y / v_magnitude);
             return v_normalized;
+        }
+
+        public override string ToString()
+        {
+            return $"X:{X} Y:{Y}";
         }
     }
 }

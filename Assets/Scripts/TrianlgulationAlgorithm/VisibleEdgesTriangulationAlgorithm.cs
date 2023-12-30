@@ -48,9 +48,9 @@ namespace Habrador_Computational_Geometry
             List<MyVector2> sortedPoints = new List<MyVector2>(points);
 
             //OrderBy is always soring in ascending order - use OrderByDescending to get in the other order
-            //sortedPoints = sortedPoints.OrderBy(n => n.x).ToList();
+            //sortedPoints = sortedPoints.OrderBy(n => n.X).ToList();
 
-            //If we have colinear points we have to sort in both x and y
+            //If we have colinear points we have to sort in both X and Y
             sortedPoints = sortedPoints.OrderBy(n => n.X).ThenBy(n => n.Y).ToList();
 
 

@@ -14,6 +14,12 @@ namespace Utility
         public static float Det2(MyVector2 a, MyVector2 b) => 
             a.X * b.Y - a.Y * b.X;
 
+        public static int RandomSign() => 
+            Random.Range(0, 2) * 2 - 1;
+
+        public static float RandomRange(float left, float right) => 
+            Random.Range(left, right);
+
         public static float AngleFromToCCW(MyVector2 from, MyVector2 to, bool shouldNormalize = false)
         {
             from = MyVector2.Normalize(from);
@@ -25,14 +31,12 @@ namespace Utility
             //The dot product is always 0 no matter in which direction the perpendicular vector is pointing
             //But the determinant is -1 or 1 depending on which way the perpendicular vector is pointing (up or down)
             //AngleBetween goes from 0 to 180 so we can now determine if we need to compensate to get 360 degrees
-            if (MathUtility.Det2(from, to) > 0f)
+            if (Det2(from, to) > 0f)
             {
                 return angleRad;
             }
-            else
-            {
-                return (Mathf.PI * 2f) - angleRad;
-            }
+
+            return Mathf.PI * 2f - angleRad;
         }
         
         //The angle between two vectors 0 <= angle <= 180
@@ -57,5 +61,7 @@ namespace Utility
 
             return angleRad;
         }
+        
+        
     }
 }

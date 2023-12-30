@@ -16,8 +16,8 @@ namespace Utility.UnityUtility
             //Make sure the data is already normalized!!!
 
             
-            //Step 1. Find the vertex with the smallest x coordinate
-            //If several points have the same x coordinate, find the one with the smallest y
+            //Step 1. Find the vertex with the smallest X coordinate
+            //If several points have the same X coordinate, find the one with the smallest Y
             MyVector2 startPos = points[0];
 
             for (int i = 1; i < points.Count; i++)

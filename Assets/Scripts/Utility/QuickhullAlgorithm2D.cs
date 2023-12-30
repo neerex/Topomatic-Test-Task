@@ -16,7 +16,7 @@ namespace Utility.UnityUtility
             
             //Step 1. 
             //Find the extreme points along each axis
-            //This is similar to AABB but we need both x and y coordinates at each extreme point
+            //This is similar to AABB but we need both X and Y coordinates at each extreme point
             MyVector2 maxX = originalPoints[0];
             MyVector2 minX = originalPoints[0];
             MyVector2 maxY = originalPoints[0];

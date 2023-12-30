@@ -12,9 +12,6 @@ namespace Utility
             float epsilon = float.Epsilon;
             bool isIntersecting = false;
 
-            // if (IsPointOnLine(a, b.P1) || IsPointOnLine(a, b.P2))
-            //     return false;
-
             float denominator = (b.P2.Y - b.P1.Y) * (a.P2.X - a.P1.X) - (b.P2.X - b.P1.X) * (a.P2.Y - a.P1.Y);
 
             //if denominator is 0 the lines are parallel
@@ -41,17 +38,30 @@ namespace Utility
             return isIntersecting;
         }
 
-        public static bool IsPointOnLine(Edge2 edge, MyVector2 point)
+        public static bool IsPointBetweenPoints(MyVector2 a, MyVector2 b, MyVector2 p)
         {
-            float epsilon = 0.01f;
+            bool isBetween = false;
+
+            MyVector2 ab = b - a;
+            MyVector2 ap = p - a;
+
+            if (MyVector2.Dot(ab, ap) > 0f && MyVector2.SqrMagnitude(ab) >= MyVector2.SqrMagnitude(ap))
+                isBetween = true;
+
+            return isBetween;
+        }
+
+        public static bool IsPointOnLine(Edge2 edge, MyVector2 p)
+        {
+            float epsilon = 0.0001f;
             var a_b = edge.P1 - edge.P2;
-            var a_p = edge.P1 - point;
-            var b_p = edge.P2 - point;
+            var a_p = edge.P1 - p;
+            var b_p = edge.P2 - p;
             
-            var len = MyVector2.Magnitude(a_b);
-            var len2 = MyVector2.Magnitude(a_p) + MyVector2.Magnitude(b_p);
+            var lenTotal = MyVector2.Magnitude(a_b);
+            var lenSum = MyVector2.Magnitude(a_p) + MyVector2.Magnitude(b_p);
             
-            return len > len2 - epsilon && len < len2 + epsilon;
+            return lenTotal > lenSum - epsilon && lenTotal < lenSum + epsilon;
         }
         
         public static MyVector2 GetLineLineIntersectionPoint(Edge2 a, Edge2 b)
@@ -67,7 +77,7 @@ namespace Utility
         public static bool PointPolygon(List<MyVector2> polygonPoints, MyVector2 point)
         {
             //Step 1. Find a point outside of the polygon
-            //Pick a point with a x position larger than the polygons max x position, which is always outside
+            //Pick a point with a X position larger than the polygons max X position, which is always outside
             MyVector2 maxXPosVertex = polygonPoints[0];
 
             for (int i = 1; i < polygonPoints.Count; i++)
@@ -77,7 +87,7 @@ namespace Utility
             //The point should be outside so just pick a number to move it outside
             //Should also move it up a little to minimize floating point precision issues
             //This is where it fails if this line is exactly on a vertex
-            MyVector2 pointOutside = maxXPosVertex + new MyVector2(1f, 0.01f);
+            MyVector2 pointOutside = maxXPosVertex + new MyVector2(1f, 1f);
             
             //Step 2. Create an edge between the point we want to test with the point thats outside
             MyVector2 l1_p1 = point;
@@ -94,7 +104,7 @@ namespace Utility
                 MyVector2 l2_p2 = polygonPoints[iPlusOne];
 
                 //Are the lines intersecting?
-                if (LineLine(new Edge2(l1_p1, l1_p2), new Edge2(l2_p1, l2_p2), includeEndPoints: false))
+                if (LineLine(new Edge2(l1_p1, l1_p2), new Edge2(l2_p1, l2_p2), includeEndPoints: true))
                     numberOfIntersections++;
             }
 

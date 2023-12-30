@@ -49,7 +49,7 @@ namespace Habrador_Computational_Geometry
             }
 
 
-            //Sort the holes by their max x-value coordinate, from highest to lowest
+            //Sort the holes by their max X-value coordinate, from highest to lowest
             holes = holes.OrderByDescending(o => o.maxX_Vert.X).ToList();
 
 
@@ -71,11 +71,11 @@ namespace Habrador_Computational_Geometry
         //between the hole and the hull
         private static void MergeHoleWithHull(EarClippingPolygon hull, EarClippingPolygon hole)
         {
-            //Step 1. Find the vertex in the hole which has the maximum x-value
+            //Step 1. Find the vertex in the hole which has the maximum X-value
             //Has already been done when we created the data structure
 
 
-            //Step 2. Form a line going from this vertex towards (in x-direction) to a position outside of the hull
+            //Step 2. Form a line going from this vertex towards (in X-direction) to a position outside of the hull
             MyVector2 lineStart = hole.maxX_Vert;
             //Just add some value so we know we are outside
             MyVector2 lineEnd = new MyVector2(hull.maxX_Vert.X + 0.01f, hole.maxX_Vert.Y);
@@ -83,7 +83,7 @@ namespace Habrador_Computational_Geometry
             Edge2 line_hole_to_outside = new Edge2(lineStart, lineEnd);
 
 
-            //Step 3. Find a vertex on the hull which is visible to the point on the hole with max x pos
+            //Step 3. Find a vertex on the hull which is visible to the point on the hole with max X pos
             //The first and second point on the hull is defined as edge 0, and so on...
             int closestEdge = -1;
 
@@ -102,8 +102,8 @@ namespace Habrador_Computational_Geometry
 
             //Step 4. Modify the hull vertices so we get an edge from the hull to the hole, around the hole, and back to the hull
 
-            //First reconfigure the hole list to start at the vertex with the largest x pos
-            //[a, b, c, d, e] and c is the one with the largest x pos, we get:
+            //First reconfigure the hole list to start at the vertex with the largest X pos
+            //[a, b, c, d, e] and c is the one with the largest X pos, we get:
             //[a, b, c, d, e, a, b]
             //[c, d, e, a, b]
             //We also need two extra vertices, one from the hole and one from the hull
@@ -177,7 +177,7 @@ namespace Habrador_Computational_Geometry
 
                 Edge2 line_hull = new Edge2(p1_hull, p2_hull);
 
-                bool isIntersecting = GeometryUtility.LineLine(line_hole_to_outside, line_hull, includeEndPoints: false);
+                bool isIntersecting = GeometryUtility.LineLine(line_hole_to_outside, line_hull, includeEndPoints: true);
 
                 //Here we can maybe add a check if any of the vertices is on the line???
 
@@ -209,7 +209,7 @@ namespace Habrador_Computational_Geometry
 
 
             //But we can't connect the hole with this intersection point, so we need to find a vertex which is visible from the hole
-            //The closest edge has two vertices. Pick the one with the highest x-value, which is the vertex
+            //The closest edge has two vertices. Pick the one with the highest X-value, which is the vertex
             //that should be visible from the hole
             MyVector2 p1 = hull.Vertices[closestEdge];
             MyVector2 p2 = hull.Vertices[MathUtility.ClampListIndex(closestEdge + 1, hull.Vertices.Count)];
@@ -320,7 +320,7 @@ namespace Habrador_Computational_Geometry
 
 
 
-        //Find reflect vertices (that also have a higher x pos than the hole)
+        //Find reflect vertices (that also have a higher X pos than the hole)
         private static List<MyVector2> FindReflectVertices(EarClippingPolygon hull, EarClippingPolygon hole)
         {
             List<MyVector2> reflectVertices = new List<MyVector2>();
