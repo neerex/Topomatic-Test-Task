@@ -1,11 +1,14 @@
 ﻿using System;
+using Utility;
 
 namespace DataStructures
 {
-    public class MyVector2
+    public class MyVector2 : IEquatable<MyVector2>
     {
         public readonly float X;
         public readonly float Y;
+
+        public bool IsIntersection = false;
 
         public MyVector2(float x, float y)
         {
@@ -39,9 +42,15 @@ namespace DataStructures
 
         public static MyVector2 Normalize(MyVector2 v)
         {
-            float v_magnitude = Magnitude(v);
-            MyVector2 v_normalized = new MyVector2(v.X / v_magnitude, v.Y / v_magnitude);
-            return v_normalized;
+            float magnitude = Magnitude(v);
+            MyVector2 normalized = new MyVector2(v.X / magnitude, v.Y / magnitude);
+            return normalized;
+        }
+        
+        public bool Equals(MyVector2 v)
+        {
+            float epsilon = MathUtility.Epsilon;
+            return v != null && Math.Abs(v.X - X) <= epsilon && Math.Abs(v.Y - Y) <= epsilon;
         }
 
         public override string ToString() => 

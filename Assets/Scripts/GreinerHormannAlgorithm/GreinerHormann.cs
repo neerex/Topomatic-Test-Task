@@ -350,7 +350,7 @@ namespace GreinerHormannAlgorithm
                 //If the next vertex is an intersection vertex with a higher alpha 
                 //or if the next vertex is not an intersection vertex, we cant improve, so we break
                 if (insertAfterThisVertex.Next.Alpha > alpha || !insertAfterThisVertex.Next.IsIntersection)
-                    break;
+                     break;
 
                 insertAfterThisVertex = insertAfterThisVertex.Next;
 

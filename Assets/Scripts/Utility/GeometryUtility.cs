@@ -116,7 +116,7 @@ namespace Utility
         }
 
         //Gauss area formula
-        public static float PolygonArea(List<MyVector2> polygonPoints)
+        public static float PolygonArea(IReadOnlyList<MyVector2> polygonPoints)
         {
             //formula working correctly if the initial poly is in +X +Y quadrant
             //so we move every point on dV, where dV is opposite of Vec2(minX, minY)
@@ -143,17 +143,17 @@ namespace Utility
 
             float totalArea = 0.5f * Math.Abs(area);
             return totalArea;
+            
+            //formula for getting dV for moving poly into +X +Y area
+            MyVector2 GetVectorForMovingPolyIntoPlusXPlusYArea(IReadOnlyList<MyVector2> polygonPoints)
+            {
+                float minX = polygonPoints.Min(p => p.X);
+                float minY = polygonPoints.Min(p => p.Y);
+
+                return new MyVector2(Math.Abs(minX), Math.Abs(minY));
+            }
         }
 
-        //formula for getting dV for moving poly into +X +Y area
-        public static MyVector2 GetVectorForMovingPolyIntoPlusXPlusYArea(List<MyVector2> polygonPoints)
-        {
-            float minX = polygonPoints.Min(p => p.X);
-            float minY = polygonPoints.Min(p => p.Y);
-
-            return new MyVector2(Math.Abs(minX), Math.Abs(minY));
-        }
-        
         public static bool IsTriangleOrientedClockwise(MyVector2 p1, MyVector2 p2, MyVector2 p3)
         {
             bool isClockWise = true;

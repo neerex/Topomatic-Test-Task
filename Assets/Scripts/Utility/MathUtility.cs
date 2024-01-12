@@ -1,10 +1,13 @@
-﻿using DataStructures;
+﻿using System;
+using DataStructures;
 using UnityEngine;
 
 namespace Utility
 {
     public static class MathUtility
     {
+        public const float Epsilon = 0.000001f;
+        
         public static int ClampListIndex(int index, int listSize) => 
             (index % listSize + listSize) % listSize;
         
@@ -42,5 +45,18 @@ namespace Utility
             float angleRad = Mathf.Acos(dot);
             return angleRad;
         }
+        
+        //2D "cross product"
+        public static float Determinant(MyVector2 a, MyVector2 b) => 
+            a.X * b.Y - a.Y * b.X;
+        
+        public static float SignWithZero(float value, float zeroThreshold = 0.000001f) => 
+            Math.Abs(value) < zeroThreshold ? 0 : Sign(value);
+        
+        public static float Sign(float value) => 
+            value >= 0f ? 1 : -1;
+        
+        public static int Mod(this int value, int length) => 
+            value >= 0 ? value % length : (value % length + length) % length;
     }
 }

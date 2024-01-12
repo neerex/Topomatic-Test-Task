@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Controllers.Interfaces;
 using DataStructures;
 using GreinerHormannAlgorithm;
+using UnityEngine;
 
 namespace Controllers
 {
@@ -15,7 +18,9 @@ namespace Controllers
         private List<MyVector2> _polyA = new();
         private List<MyVector2> _polyB = new();
         private List<List<MyVector2>> _finalPolygon = new();
+        private List<Polygon2> _drawPoly;
         public event PolygonRecalculationHandler OnPolygonsRecalculation;
+        public event Action<List<Polygon2>> OnDraw;
 
         public PolygonClippingController(IPolygonProvider polygonProvider)
         {
@@ -31,6 +36,13 @@ namespace Controllers
             _polyA = _polygonProvider.GetPolyVertices(PolygonType.A);
             _polyB = _polygonProvider.GetPolyVertices(PolygonType.B);
 
+            var polyA = new Polygon2(_polyA);
+            var polyB = new Polygon2(_polyB);
+
+            _drawPoly = PolyClipper.PolygonClipper(polyA, polyB, BooleanOperation.Intersection);
+            OnDraw?.Invoke(_drawPoly);
+            Debug.Log($"{_drawPoly?.First().Points.Count}");
+            
             _finalPolygon = GreinerHormann.ClipPolygons(_polyA, _polyB, _operation);
             OnPolygonsRecalculation?.Invoke(_polyA, _polyB, _finalPolygon);
         }

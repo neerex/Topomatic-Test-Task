@@ -21,6 +21,9 @@ namespace Utility
         public static MyVector2 ToMyVector2(this MyVector3 v) => 
             new MyVector2(v.X, v.Y);
 
+        public static MyVector2 To(this MyVector2 from, MyVector2 to) => 
+            new MyVector2(to.X - from.X, to.Y - from.Y);
+
         public static Vector3 Edge2ToV3(this Edge2 edge, float zPos = 0)
         {
             MyVector2 p1 = edge.P1;
