@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DataStructures;
+using GreinerHormannAlgorithm;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace Utility.UnityUtility.DebugUtility
     {
         public static PolygonVertexInfoDebugVisualizer Instance;
         private List<List<Vector3>> _finalPoly;
-        private List<Polygon2> _polyToDraw;
+        private List<List<ClipVertex2>> _polyToDraw;
 
         private void Awake()
         {
@@ -46,13 +47,21 @@ namespace Utility.UnityUtility.DebugUtility
             if (_polyToDraw != null)
             {
                 var angle = 45;
-                foreach (var polygon2 in _polyToDraw)
+                foreach (List<ClipVertex2> poly in _polyToDraw)
                 {
-                    for (int i = 0; i < polygon2.Count; i++)
+                    for (int i = 0; i < poly.Count; i++)
                     {
-                        MyVector2 p = polygon2[i];
-                        Gizmos.color = p.IsIntersection ? Color.red : Color.black;
-                        var radius = Gizmos.color == Color.black ? 0.3f : 0.2f;
+                        MyVector2 p = poly[i].Coord;
+                        
+                        Gizmos.color = Color.black;
+
+                        if (poly[i].IsIntersection && poly[i].IsEntering)
+                            Gizmos.color = Color.yellow;
+                        
+                        if (poly[i].IsIntersection && !poly[i].IsEntering)
+                            Gizmos.color = Color.magenta;
+                        
+                        var radius = Gizmos.color == Color.black ? 0.1f : 0.05f;
                         Gizmos.DrawSphere(p.ToVector3() + Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up * 0.1f, radius);
                         Handles.Label(p.ToVector3() + Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up * 0.3f, $"{i}");
                     }
@@ -61,7 +70,7 @@ namespace Utility.UnityUtility.DebugUtility
             }
         }
 
-        public void Draw(List<Polygon2> polyToDraw)
+        public void Draw(List<List<ClipVertex2>> polyToDraw)
         {
             _polyToDraw = polyToDraw;
         }

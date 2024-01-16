@@ -24,6 +24,15 @@ namespace Utility
         public static MyVector2 To(this MyVector2 from, MyVector2 to) => 
             new MyVector2(to.X - from.X, to.Y - from.Y);
 
+        public static MyVector2 Middle(this Edge2 edge)
+        {
+            MyVector2 p1 = edge.P1;
+            MyVector2 p2 = edge.P2;
+            float xMid = (p1.X + p2.X) / 2;
+            float yMid = (p1.Y + p2.Y) / 2;
+            return new MyVector2(xMid, yMid);
+        }
+
         public static Vector3 Edge2ToV3(this Edge2 edge, float zPos = 0)
         {
             MyVector2 p1 = edge.P1;

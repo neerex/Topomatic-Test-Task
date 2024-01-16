@@ -3,12 +3,10 @@ using Utility;
 
 namespace DataStructures
 {
-    public class MyVector2 : IEquatable<MyVector2>
+    public readonly struct MyVector2 : IEquatable<MyVector2>
     {
         public readonly float X;
         public readonly float Y;
-
-        public bool IsIntersection = false;
 
         public MyVector2(float x, float y)
         {
@@ -50,8 +48,11 @@ namespace DataStructures
         public bool Equals(MyVector2 v)
         {
             float epsilon = MathUtility.Epsilon;
-            return v != null && Math.Abs(v.X - X) <= epsilon && Math.Abs(v.Y - Y) <= epsilon;
+            return Math.Abs(v.X - X) <= epsilon && Math.Abs(v.Y - Y) <= epsilon;
         }
+        
+        public override int GetHashCode() => 
+            HashCode.Combine(X, Y);
 
         public override string ToString() => 
             $"X:{X} Y:{Y}";

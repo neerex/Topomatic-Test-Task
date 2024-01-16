@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GreinerHormannAlgorithm;
 using Utility;
 
 namespace DataStructures
@@ -7,35 +8,22 @@ namespace DataStructures
     {
         public readonly IReadOnlyList<MyVector2> Points;
         public readonly IReadOnlyList<Edge2> Edges;
-        
-        //Form a circular linked list for polygon points
-        public readonly LinkedList<MyVector2> LinkedPoints;
-        private LinkedListNode<MyVector2> _current;
-        public LinkedListNode<MyVector2> Current
-        {
-            get
-            {
-                _current ??= LinkedPoints.First;
-                return _current;
-            }
-            set
-            {
-                _current = value;
-            }
-        }
 
         public Polygon2(IReadOnlyList<MyVector2> points)
         {
             Points = points;
             Edges = InitEdges();
-            LinkedPoints = new LinkedList<MyVector2>(Points);
         }
 
         public MyVector2 this[int i] => Points[i.Mod(Count)];
+        public Edge2 GetEdgeAt(int i) => Edges[i.Mod(Edges.Count)];
+        
         public int Count => Points.Count;
         public bool IsClockwise => SignedArea > 0;
 
-        public float SignedArea 
+        public bool Contains(MyVector2 point) => WindingNumber(point) != 0;
+
+        private float SignedArea 
         {
             get 
             {
@@ -51,9 +39,7 @@ namespace DataStructures
             }
         }
 
-        public bool Contains(MyVector2 point) => WindingNumber(point) != 0;
-
-        public int WindingNumber(MyVector2 point) 
+        private int WindingNumber(MyVector2 point) 
         {
             int winding = 0;
             for(int i = 0; i < Count; i++) 

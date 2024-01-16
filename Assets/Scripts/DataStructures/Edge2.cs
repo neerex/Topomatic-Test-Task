@@ -1,6 +1,6 @@
 ﻿namespace DataStructures
 {
-    public class Edge2
+    public struct Edge2
     {
         public readonly MyVector2 P1;
         public readonly MyVector2 P2;

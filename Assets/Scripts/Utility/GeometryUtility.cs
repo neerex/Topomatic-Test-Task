@@ -9,7 +9,7 @@ namespace Utility
     {
         public static bool LineLine(Edge2 a, Edge2 b, bool includeEndPoints)
         {
-            float epsilon = float.Epsilon;
+            float epsilon = MathUtility.Epsilon;
             bool isIntersecting = false;
 
             float denominator = (b.P2.Y - b.P1.Y) * (a.P2.X - a.P1.X) - (b.P2.X - b.P1.X) * (a.P2.Y - a.P1.Y);
@@ -53,7 +53,7 @@ namespace Utility
 
         public static bool IsPointOnLine(Edge2 edge, MyVector2 p)
         {
-            float epsilon = 0.0001f;
+            float epsilon = MathUtility.Epsilon;
             var a_b = edge.P1 - edge.P2;
             var a_p = edge.P1 - p;
             var b_p = edge.P2 - p;

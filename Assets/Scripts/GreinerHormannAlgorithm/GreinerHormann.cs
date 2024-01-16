@@ -377,9 +377,7 @@ namespace GreinerHormannAlgorithm
             ClipVertex currentVertex = poly[0];
             ClipVertex firstVertex = currentVertex;
 
-            int safety = 0;
-
-            while (true)
+            do
             {
                 if (currentVertex.IsIntersection)
                 {
@@ -389,14 +387,7 @@ namespace GreinerHormannAlgorithm
 
                 currentVertex = currentVertex.Next;
 
-                //We have travelled around the entire polygon
-                if (currentVertex.Equals(firstVertex))
-                    break;
-
-                safety++;
-                if (safety > 1000)
-                    break;
-            }
+            }while (!currentVertex.Equals(firstVertex));
         }
     }
 }
