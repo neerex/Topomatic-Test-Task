@@ -16,16 +16,13 @@ namespace GreinerHormannAlgorithm
             Polygon2 windowClockwise = GetClockwisePoly(window);
             
             
-           
-            // step 1-1:
-            // form new polygons with intersection connections
+            // step 1:
+            // form new polygons with intersection connections and
+            // init needed data structures
             List<ClipVertex2> polyWithIntersectionVertices = FormPolyWithNewIntersectionVertices(poly, window);
             List<ClipVertex2> windowWithIntersectionVertices = FormPolyWithNewIntersectionVertices(window, poly);
-            
-            //step 1-2
-            // init needed data structures
 
-            
+
             //check if any poly has only has same number of intersection as vertices in the original poly
             
             //step 2:
@@ -145,11 +142,23 @@ namespace GreinerHormannAlgorithm
                 //check if point is on the otherPoly edge or not
                 MyVector2 edgeP1 = edge1.P1;
                 ClipVertex2 clipVert = new ClipVertex2(edgeP1);
+                
+                //check if point exactly on the end pont of the edge
+                
                 foreach (Edge2 edge2 in intersectionPoly.Edges)
                 {
+                    bool isExactlyOnTheEndpoint = edgeP1.Equals(edge2.P1) || edgeP1.Equals(edge2.P2);
+                    if (isExactlyOnTheEndpoint)
+                    {
+                        clipVert.IsOnTheVertexOfOtherPolygon = true;
+                        clipVert.IsIntersection = true;
+                        break;
+                    }
+
                     if (GeometryUtility.IsPointOnLine(edge2, edgeP1))
                     {
                         clipVert.IsOnOtherPolygonEdge = true;
+                        clipVert.IsIntersection = true;
                         break;
                     }
                 }
@@ -208,6 +217,9 @@ namespace GreinerHormannAlgorithm
                     cV.IsEntering = false;
                 else if(!isContainingPrevMiddle && isContainingNextMiddle)
                     cV.IsEntering = true;
+                
+                if(isContainingPrevMiddle && isContainingNextMiddle || !isContainingPrevMiddle && !isContainingNextMiddle)
+                    cV.IsIntersection = false;
             }
             
             return result;

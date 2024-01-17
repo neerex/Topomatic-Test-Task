@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using GreinerHormannAlgorithm;
 using Utility;
 
@@ -21,6 +22,7 @@ namespace DataStructures
         public int Count => Points.Count;
         public bool IsClockwise => SignedArea > 0;
 
+        public bool IsPointOnAnyEdge(MyVector2 point) => Edges.Any(e => GeometryUtility.IsPointOnLine(e, point));
         public bool Contains(MyVector2 point) => WindingNumber(point) != 0;
 
         private float SignedArea 

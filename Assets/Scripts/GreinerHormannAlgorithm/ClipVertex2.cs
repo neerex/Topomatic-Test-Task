@@ -13,6 +13,7 @@ namespace GreinerHormannAlgorithm
         public ClipVertex2 Prev;
         public ClipVertex2 SameVertexInOtherPoly;
         public bool IsOnOtherPolygonEdge;
+        public bool IsOnTheVertexOfOtherPolygon;
 
         public ClipVertex2(MyVector2 coord)
         {
@@ -24,7 +25,7 @@ namespace GreinerHormannAlgorithm
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return Equals(Coord, other.Coord);
+            return other.Coord.Equals(Coord);
         }
 
         public override int GetHashCode()

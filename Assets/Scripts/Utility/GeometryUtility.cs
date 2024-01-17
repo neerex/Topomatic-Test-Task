@@ -20,8 +20,8 @@ namespace Utility
                 float u_a = ((b.P2.X - b.P1.X) * (a.P1.Y - b.P1.Y) - (b.P2.Y - b.P1.Y) * (a.P1.X - b.P1.X)) / denominator;
                 float u_b = ((a.P2.X - a.P1.X) * (a.P1.Y - b.P1.Y) - (a.P2.Y - a.P1.Y) * (a.P1.X - b.P1.X)) / denominator;
                 
-                float zero = -epsilon;
-                float one = 1f + epsilon;
+                float zero = epsilon;
+                float one = 1f - epsilon;
                 
                 if (includeEndPoints)
                 {
