@@ -1748,7 +1748,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &213479218
 Transform:
   m_ObjectHideFlags: 0
@@ -4378,8 +4378,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ff9619c828245b899ee20a02cd72129, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _polyAParent: {fileID: 213479218}
-  _polyBParent: {fileID: 2119986639}
+  _polyAParent: {fileID: 1672791759}
+  _polyBParent: {fileID: 1220947845}
 --- !u!1 &723214646
 GameObject:
   m_ObjectHideFlags: 0
@@ -7929,7 +7929,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1220947845
 Transform:
   m_ObjectHideFlags: 0
@@ -10792,7 +10792,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1672791759
 Transform:
   m_ObjectHideFlags: 0
@@ -14201,7 +14201,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2119986639
 Transform:
   m_ObjectHideFlags: 0

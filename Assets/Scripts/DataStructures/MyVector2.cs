@@ -14,6 +14,9 @@ namespace DataStructures
             Y = y;
         }
         
+        public float Cross(MyVector2 v) => 
+            X * v.Y - Y * v.X;
+        
         public static float SqrMagnitude(MyVector2 a) => 
             a.X * a.X + a.Y * a.Y;
 
@@ -29,6 +32,9 @@ namespace DataStructures
         public static MyVector2 operator *(MyVector2 a, float b) => 
             new MyVector2(a.X * b, a.Y * b);
         
+        public static float operator *(MyVector2 v, MyVector2 w) => 
+            v.X * w.X + v.Y * w.Y;
+
         public static float Magnitude(MyVector2 a) => 
             (float)Math.Sqrt(SqrMagnitude(a));
 

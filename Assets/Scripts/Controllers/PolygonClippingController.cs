@@ -18,9 +18,9 @@ namespace Controllers
         private List<MyVector2> _polyA = new();
         private List<MyVector2> _polyB = new();
         private List<List<MyVector2>> _finalPolygon = new();
-        private List<List<ClipVertex2>> _drawPoly;
+        private (List<List<ClipVertex2>> polys, List<Polygon2> finalPoly) _drawPoly;
         public event PolygonRecalculationHandler OnPolygonsRecalculation;
-        public event Action<List<List<ClipVertex2>>> OnDraw;
+        public event Action<(List<List<ClipVertex2>> polys, List<Polygon2> finalPoly)> OnDraw;
 
         public PolygonClippingController(IPolygonProvider polygonProvider)
         {
@@ -41,9 +41,9 @@ namespace Controllers
 
             _drawPoly = PolyClipper.PolygonClipper(polyA, polyB, BooleanOperation.Intersection);
             OnDraw?.Invoke(_drawPoly);
-            Debug.Log($"{_drawPoly?.First().Count}");
+            //Debug.Log($"{_drawPoly?.First().Count}");
             
-            _finalPolygon = GreinerHormann.ClipPolygons(_polyA, _polyB, _operation);
+            //_finalPolygon = GreinerHormann.ClipPolygons(_polyA, _polyB, _operation);
             OnPolygonsRecalculation?.Invoke(_polyA, _polyB, _finalPolygon);
         }
 

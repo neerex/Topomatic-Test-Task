@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DataStructures;
 using GreinerHormannAlgorithm;
+using TriangulationAlgorithm.EarClipping;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,7 +12,8 @@ namespace Utility.UnityUtility.DebugUtility
     {
         public static PolygonVertexInfoDebugVisualizer Instance;
         private List<List<Vector3>> _finalPoly;
-        private List<List<ClipVertex2>> _polyToDraw;
+        private (List<List<ClipVertex2>> polys, List<Polygon2> finalPoly) _polyToDraw;
+        private List<Mesh> _meshes = new();
 
         private void Awake()
         {
@@ -44,11 +46,14 @@ namespace Utility.UnityUtility.DebugUtility
             //     }
             // }
 
-            if (_polyToDraw != null)
+            if (_polyToDraw.polys != null)
             {
                 var angle = 45;
-                foreach (List<ClipVertex2> poly in _polyToDraw)
+                foreach (List<ClipVertex2> poly in _polyToDraw.polys)
                 {
+                    GUIStyle style = new GUIStyle();
+                    style.normal.textColor = _polyToDraw.polys.IndexOf(poly) % 2 == 0 ? Color.blue : Color.green;
+                    
                     for (int i = 0; i < poly.Count; i++)
                     {
                         MyVector2 p = poly[i].Coord;
@@ -60,19 +65,62 @@ namespace Utility.UnityUtility.DebugUtility
                         
                         if (poly[i].IsIntersection && !poly[i].IsEntering)
                             Gizmos.color = Color.magenta;
+
+                        if (poly[i].IsOnOtherPolygonEdge)
+                            Gizmos.color = Color.cyan;
+                        
+                        if (poly[i].IsOnTheVertexOfOtherPolygon)
+                            Gizmos.color = Color.red;
                         
                         var radius = Gizmos.color == Color.black ? 0.1f : 0.05f;
                         Gizmos.DrawSphere(p.ToVector3() + Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up * 0.1f, radius);
-                        Handles.Label(p.ToVector3() + Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up * 0.3f, $"{i}");
+                        Handles.Label(p.ToVector3() + Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up * 0.3f, $"{i}", style);
                     }
                     angle += 45;
                 }
             }
+
+            if (_polyToDraw.finalPoly != null && _polyToDraw.finalPoly.Count != 0)
+            {
+                //Debug.Log($"Total final polys {_polyToDraw.finalPoly.Count}");
+                var polys = new List<List<MyVector2>>();
+                foreach (Polygon2 poly in _polyToDraw.finalPoly) 
+                    polys.Add(poly.Points.ToList());
+
+                var mesh = CreateMeshFromPolyVertexList(polys);
+                Gizmos.color = new Color(0,1,1,0.5f);
+                Gizmos.DrawMesh(mesh, Vector3.zero);
+            }
         }
 
-        public void Draw(List<List<ClipVertex2>> polyToDraw)
+        public void Draw((List<List<ClipVertex2>> polys, List<Polygon2> finalPoly) polyToDraw)
         {
             _polyToDraw = polyToDraw;
+        }
+        
+        public Mesh CreateMeshFromPolyVertexList(List<List<MyVector2>> finalPoly)
+        {
+            _meshes.Clear();
+            foreach (var poly in finalPoly)
+            {
+                HashSet<Triangle2> triangulation = EarClipping.Triangulate(poly.Distinct().ToList(), false);
+                
+                if (triangulation == null)
+                    continue;
+
+                Mesh mesh = MeshUtility.Triangles2ToMesh(triangulation, false);
+                _meshes.Add(mesh);
+            }
+            
+            CombineInstance[] combine = new CombineInstance[_meshes.Count];
+
+            for (int i = 0; i < _meshes.Count; i++) 
+                combine[i].mesh = _meshes[i];
+
+            Mesh finalMesh = new Mesh();
+            finalMesh.CombineMeshes(combine, true, false);
+            finalMesh.RecalculateNormals();
+            return finalMesh;
         }
     }
 }

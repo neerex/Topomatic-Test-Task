@@ -18,7 +18,7 @@ namespace Controllers
             SetupMeshCreator();
         }
 
-        public void CreateMeshFromPolyVertexList(List<List<MyVector2>> finalPoly)
+        public Mesh CreateMeshFromPolyVertexList(List<List<MyVector2>> finalPoly)
         {
             _meshes.Clear();
             foreach (var poly in finalPoly)
@@ -40,6 +40,7 @@ namespace Controllers
             Mesh finalMesh = new Mesh();
             finalMesh.CombineMeshes(combine, true, false);
             _meshFilter.sharedMesh = finalMesh;
+            return finalMesh;
         }
 
         private void SetupMeshCreator()

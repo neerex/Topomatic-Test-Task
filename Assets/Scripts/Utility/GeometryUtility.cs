@@ -7,6 +7,57 @@ namespace Utility
 {
     public static class GeometryUtility
     {
+        public static bool LineSegmentsIntersect(Edge2 edge1, Edge2 edge2, out MyVector2 intersection, bool considerCollinearOverlapAsIntersect = false)
+        {
+            intersection = new MyVector2();
+
+            var p = edge1.P1;
+            var p2 = edge1.P2;
+            var q = edge2.P1;
+            var q2 = edge2.P2;
+            
+            MyVector2 r = p2 - p;
+            MyVector2 s = q2 - q;
+            float rxs = r.Cross(s);
+            float qpxr = (q - p).Cross(r);
+
+            // If r x s = 0 and (q - p) x r = 0, then the two lines are collinear.
+            if (rxs.IsZero() && qpxr.IsZero())
+            {
+                // 1. If either  0 <= (q - p) * r <= r * r or 0 <= (p - q) * s <= * s
+                // then the two lines are overlapping,
+                if (considerCollinearOverlapAsIntersect)
+                    if ((0 <= (q - p)*r && (q - p)*r <= r*r) || (0 <= (p - q)*s && (p - q)*s <= s*s))
+                        return true;
+
+                // 2. If neither 0 <= (q - p) * r = r * r nor 0 <= (p - q) * s <= s * s
+                // then the two lines are collinear but disjoint.
+                // No need to implement this expression, as it follows from the expression above.
+                return false;
+            }
+
+            // 3. If r x s = 0 and (q - p) x r != 0, then the two lines are parallel and non-intersecting.
+            if (rxs.IsZero() && !qpxr.IsZero())
+                return false;
+            
+            var t = (q - p).Cross(s)/rxs;
+            var u = (q - p).Cross(r)/rxs;
+
+            // 4. If r x s != 0 and 0 <= t <= 1 and 0 <= u <= 1
+            // the two line segments meet at the point p + t r = q + u s.
+            if (!rxs.IsZero() && t is >= 0 and <= 1 && u is >= 0 and <= 1)
+            {
+                // We can calculate the intersection point using either t or u.
+                intersection = p + t * r;
+
+                // An intersection was found.
+                return true;
+            }
+
+            // 5. Otherwise, the two line segments are not parallel but do not intersect.
+            return false;
+        }
+        
         public static bool LineLine(Edge2 a, Edge2 b, bool includeEndPoints)
         {
             float epsilon = MathUtility.Epsilon;
@@ -20,16 +71,19 @@ namespace Utility
                 float u_a = ((b.P2.X - b.P1.X) * (a.P1.Y - b.P1.Y) - (b.P2.Y - b.P1.Y) * (a.P1.X - b.P1.X)) / denominator;
                 float u_b = ((a.P2.X - a.P1.X) * (a.P1.Y - b.P1.Y) - (a.P2.Y - a.P1.Y) * (a.P1.X - b.P1.X)) / denominator;
                 
-                float zero = epsilon;
-                float one = 1f - epsilon;
-                
                 if (includeEndPoints)
                 {
+                    float zero = -epsilon;
+                    float one = 1f + epsilon;
+                    
                     if (u_a >= zero && u_a <= one && u_b >= zero && u_b <= one) 
                         isIntersecting = true;
                 }
                 else
                 {
+                    float zero = epsilon;
+                    float one = 1f - epsilon;
+                    
                     if (u_a > zero && u_a < one && u_b > zero && u_b < one) 
                         isIntersecting = true;
                 }
@@ -37,6 +91,31 @@ namespace Utility
 
             return isIntersecting;
         }
+
+        public static bool LinesParallel(Edge2 a, Edge2 b)
+        {
+            float epsilon = MathUtility.Epsilon;
+            float denominator = (b.P2.Y - b.P1.Y) * (a.P2.X - a.P1.X) - (b.P2.X - b.P1.X) * (a.P2.Y - a.P1.Y);
+            return Math.Abs(denominator) <= epsilon;
+        }
+
+        public static bool IsEdgeTouchingEdge(Edge2 a, Edge2 touchingEdge, out MyVector2 touchPoint)
+        {
+            touchPoint = default;
+            bool isPoint1 = IsPointOnLine(a, touchingEdge.P1);
+            bool isPoint2 = IsPointOnLine(a, touchingEdge.P2);
+
+            if (isPoint1)
+                touchPoint = touchingEdge.P1;
+            
+            if (isPoint2)
+                touchPoint = touchingEdge.P2;
+            
+            return isPoint1 || isPoint2;
+        }
+
+        public static bool IsEdgeContainsEdge(Edge2 a, Edge2 containingEdge) => 
+            IsPointOnLine(a, containingEdge.P1) && IsPointOnLine(a, containingEdge.P2);
 
         public static bool IsPointBetweenPoints(MyVector2 a, MyVector2 b, MyVector2 p)
         {
@@ -61,7 +140,7 @@ namespace Utility
             var lenTotal = MyVector2.Magnitude(a_b);
             var lenSum = MyVector2.Magnitude(a_p) + MyVector2.Magnitude(b_p);
             
-            return lenTotal > lenSum - epsilon && lenTotal < lenSum + epsilon;
+            return lenTotal >= lenSum - epsilon && lenTotal <= lenSum + epsilon;
         }
         
         public static MyVector2 GetLineLineIntersectionPoint(Edge2 a, Edge2 b)
@@ -74,7 +153,7 @@ namespace Utility
         
         //Is a point intersecting with a polygon?
         //The list describing the polygon has to be sorted either clockwise or counter-clockwise
-        public static bool PointPolygon(List<MyVector2> polygonPoints, MyVector2 point)
+        public static bool PointPolygon(IReadOnlyList<MyVector2> polygonPoints, MyVector2 point)
         {
             //Step 1. Find a point outside of the polygon
             //Pick a point with a X position larger than the polygons max X position, which is always outside
@@ -104,6 +183,10 @@ namespace Utility
                 MyVector2 l2_p2 = polygonPoints[iPlusOne];
 
                 //Are the lines intersecting?
+                
+                // if(LineSegmentsIntersect(new Edge2(l1_p1, l1_p2), new Edge2(l2_p1, l2_p2), out _, true))
+                //     numberOfIntersections++;
+                
                 if (LineLine(new Edge2(l1_p1, l1_p2), new Edge2(l2_p1, l2_p2), includeEndPoints: true))
                     numberOfIntersections++;
             }
@@ -206,7 +289,7 @@ namespace Utility
             bool shouldFlipEdge = false;
 
             //Use the circle test to test if we need to flip this edge
-            //We should flip if d is inside a circle formed by a, b, c
+            //We should flip if d is inside a circle formed by a, touchingEdge, c
             IntersectionCases intersectionCases = PointCircle(a, b, c, d);
 
             if (intersectionCases == IntersectionCases.IsInside)
@@ -281,7 +364,7 @@ namespace Utility
         
         public static MyVector2 CalculateCircleCenter(MyVector2 a, MyVector2 b, MyVector2 c)
         {
-            //Make sure the triangle a-b-c is counterclockwise
+            //Make sure the triangle a-touchingEdge-c is counterclockwise
             if (!IsTriangleOrientedClockwise(a, b, c)) 
                 (a, b) = (b, a);
 

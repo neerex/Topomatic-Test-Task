@@ -23,7 +23,11 @@ namespace DataStructures
         public bool IsClockwise => SignedArea > 0;
 
         public bool IsPointOnAnyEdge(MyVector2 point) => Edges.Any(e => GeometryUtility.IsPointOnLine(e, point));
-        public bool Contains(MyVector2 point) => WindingNumber(point) != 0;
+        public bool Contains(MyVector2 point)
+        {
+            return //IsPointOnAnyEdge(point) || 
+                   WindingNumber(point) != 0;
+        }
 
         private float SignedArea 
         {
@@ -63,6 +67,21 @@ namespace DataStructures
             
             float IsLeft( MyVector2 a, MyVector2 b, MyVector2 p ) => 
                 MathUtility.SignWithZero(MathUtility.Determinant(a.To(p), a.To(b)));
+        }
+
+        public bool IsSelfIntersecting()
+        {
+            for (int i = 0; i < Edges.Count - 1; i++)
+            {
+                for (int j = i + 1; j < Edges.Count; j++)
+                {
+                    var edge1 = Edges[i];
+                    var edge2 = Edges[j];
+                    if (GeometryUtility.LineLine(edge1, edge2, false))
+                        return true;
+                }
+            }
+            return false;
         }
 
         private List<Edge2> InitEdges()

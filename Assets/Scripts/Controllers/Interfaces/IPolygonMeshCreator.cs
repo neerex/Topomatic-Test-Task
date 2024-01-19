@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using DataStructures;
+using UnityEngine;
 
 namespace Controllers.Interfaces
 {
     public interface IPolygonMeshCreator
     {
-        void CreateMeshFromPolyVertexList(List<List<MyVector2>> finalPoly);
+        Mesh CreateMeshFromPolyVertexList(List<List<MyVector2>> finalPoly);
     }
 }

@@ -11,7 +11,7 @@ namespace GreinerHormannAlgorithm
         public bool IsEntering;
         public ClipVertex2 Next;
         public ClipVertex2 Prev;
-        public ClipVertex2 SameVertexInOtherPoly;
+        public ClipVertex2 Neighbour;
         public bool IsOnOtherPolygonEdge;
         public bool IsOnTheVertexOfOtherPolygon;
 

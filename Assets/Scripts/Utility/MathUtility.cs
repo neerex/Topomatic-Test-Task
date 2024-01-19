@@ -55,7 +55,10 @@ namespace Utility
         
         public static float Sign(float value) => 
             value >= 0f ? 1 : -1;
-        
+
+        public static bool IsZero(this float value) => 
+            Math.Abs(value) < Epsilon;
+
         public static int Mod(this int value, int length) => 
             value >= 0 ? value % length : (value % length + length) % length;
     }
