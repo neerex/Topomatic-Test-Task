@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DataStructures;
+using Unity.VisualScripting;
+using Utility;
 using GeometryUtility = Utility.GeometryUtility;
 
 namespace GreinerHormannAlgorithm
 {
     public static class PolygonClippingAlgorithm
     {
-        public static HashSet<MyVector2> PolygonClipper(Polygon2 poly, Polygon2 window, BooleanOperation operation)
+        public static List<VerticalIntersectingLine> PolygonClipper(Polygon2 poly, Polygon2 window, BooleanOperation operation)
         {
             //check if polygon is self intersecting then return empty result
             if (poly.IsSelfIntersecting()) return default;
@@ -24,15 +27,89 @@ namespace GreinerHormannAlgorithm
             //Polygon2 windowClockwise = GetClockwisePoly(window);
 
             //add all vertices from all polygons
-            HashSet<MyVector2> verticesAndIntersectionPoints = new HashSet<MyVector2>();
+            List<MyVector2> verticesAndIntersectionPoints = new List<MyVector2>();
             foreach (MyVector2 v in window.Points) verticesAndIntersectionPoints.Add(v);
             foreach (MyVector2 v in poly.Points)   verticesAndIntersectionPoints.Add(v);
             
             PopulateUniqueVerticesSetWithIntersections(poly, window, verticesAndIntersectionPoints);
-            
-            return verticesAndIntersectionPoints;
+
+            List<VerticalIntersectingLine> verticalIntersectionLines = InitializeVerticalIntersectionLines(verticesAndIntersectionPoints, poly, window);
+            CalculatePolygonEdges(verticalIntersectionLines, poly, window);
+            return verticalIntersectionLines;
         }
-        
+
+        private static List<VerticalIntersectingLine> InitializeVerticalIntersectionLines(List<MyVector2> verticesAndIntersectionPoints, 
+            Polygon2 poly, Polygon2 window)
+        {
+            List<float> uniqueX = verticesAndIntersectionPoints.Select(v => v.X)
+                .Distinct(new FloatComparer())
+                .OrderBy(x => x)
+                .ToList();
+            
+            List<VerticalIntersectingLine> intersectingLines = new();
+            float maxY = verticesAndIntersectionPoints.Max(v => v.Y);
+            float minY = verticesAndIntersectionPoints.Min(v => v.Y);
+            
+            foreach (float x in uniqueX)
+            {
+                var line = new VerticalIntersectingLine(minY, maxY, x);
+                intersectingLines.Add(line);
+                line.PopulateIntersectionCollection(poly);
+                line.PopulateIntersectionCollection(window);
+                line.SortIntersectionFromYMaxToYMin();
+            }
+
+            return intersectingLines;
+        }
+
+        private static List<List<Edge2>> CalculatePolygonEdges(List<VerticalIntersectingLine> verticalIntersectionLines, Polygon2 poly, Polygon2 window)
+        {
+            List<List<Edge2>> result = new List<List<Edge2>>();
+            
+            for (int i = 0; i < verticalIntersectionLines.Count - 1; i++)
+            {
+                var sectorEdges = new List<Edge2>();
+                
+                var curr = verticalIntersectionLines[i];
+                var next = verticalIntersectionLines[i+1];
+                
+                var currPoints = curr.SortedUniqueIntersections;
+                var nextPoint = next.SortedUniqueIntersections;
+                
+                int currIndex = 0;
+                int nextIndex = 0;
+                
+                while (currIndex < currPoints.Count - 1 && nextIndex < nextPoint.Count - 1)
+                {
+                    if (nextIndex == nextPoint.Count)
+                    {
+                        currIndex++;
+                        nextIndex = Math.Clamp(nextIndex - 1, 0, nextPoint.Count - 1);
+                    }
+                        
+                    var edge = new Edge2(currPoints[currIndex], nextPoint[nextIndex]);
+                    if (IsEdgeLiesOnPolygonPerimeter(poly, edge) || IsEdgeLiesOnPolygonPerimeter(window, edge))
+                    {
+                        sectorEdges.Add(edge);
+                        nextIndex++;
+                    }
+                    else
+                    {
+                        currIndex++;
+                        nextIndex--;
+                    }
+                }
+                result.Add(sectorEdges);
+            }
+
+            return result;
+        }
+
+        public static bool IsEdgeLiesOnPolygonPerimeter(Polygon2 poly, Edge2 edge)
+        {
+            return poly.Edges.Any(e => GeometryUtility.IsEdgeContainsEdge(e, edge));
+        }
+
         private static Polygon2 SimplifyPolygon(Polygon2 poly)
         {
             List<MyVector2> simplifiedPolyVerts = new List<MyVector2>();
@@ -60,7 +137,7 @@ namespace GreinerHormannAlgorithm
             return new Polygon2(clockwisePolyPoints);
         }
         
-        private static void PopulateUniqueVerticesSetWithIntersections(Polygon2 poly, Polygon2 intersectionPoly, HashSet<MyVector2> uniques)
+        private static void PopulateUniqueVerticesSetWithIntersections(Polygon2 poly, Polygon2 intersectionPoly, List<MyVector2> uniques)
         {
             foreach (Edge2 edge1 in poly.Edges)
             {
@@ -79,9 +156,17 @@ namespace GreinerHormannAlgorithm
                         continue;
 
                     if (GeometryUtility.LineSegmentsIntersect(edge1, edge2, out MyVector2 intersectionPoint))
+                    {
                         uniques.Add(intersectionPoint);
+                    }
                 }
             }
         }
+    }
+    
+    public class FloatComparer : IEqualityComparer<float>
+    {
+        public bool Equals(float x, float y) => x.EqualsWithEpsilon(y);
+        public int GetHashCode(float value) => 0;
     }
 }

@@ -9,8 +9,10 @@ namespace DataStructures
         public readonly Edge2 Line;
         public readonly float X;
         
-        public List<MyVector2> SortedUniqueIntersections = new();
+        private List<MyVector2> _sortedUniqueIntersections = new();
         private readonly HashSet<MyVector2> _uniqueIntersections = new();
+
+        public IReadOnlyList<MyVector2> SortedUniqueIntersections => _sortedUniqueIntersections.AsReadOnly();
         
         public VerticalIntersectingLine(float minY, float maxY, float x)
         {
@@ -39,14 +41,15 @@ namespace DataStructures
                 }
                 else if (GeometryUtility.LineSegmentsIntersect(Line, edge, out MyVector2 intersection))
                 {
-                    _uniqueIntersections.Add(intersection);
+                    if(!_uniqueIntersections.Any(p => p.Equals(intersection)))
+                        _uniqueIntersections.Add(intersection);
                 }
             }
         }
 
         //sort from yMax to yMin
         public void SortIntersectionFromYMaxToYMin() => 
-            SortedUniqueIntersections = _uniqueIntersections.OrderByDescending(v => v.Y).ToList();
+            _sortedUniqueIntersections = _uniqueIntersections.OrderByDescending(v => v.Y).ToList();
 
         private bool CanIntersectWithEdge(Edge2 edge) => 
             edge.P1.X <= X && edge.P2.X >= X || edge.P1.X >= X && edge.P2.X <= X;

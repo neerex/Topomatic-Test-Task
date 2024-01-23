@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DataStructures;
-using UnityEngine;
 using Utility;
 using GeometryUtility = Utility.GeometryUtility;
 
@@ -15,7 +14,7 @@ namespace GreinerHormannAlgorithm
             if (poly.IsSelfIntersecting()) return default;
             if (window.IsSelfIntersecting()) return default;
             
-            //simplify polygon, remove vertexes that are on the same line 1---2---3, so remove 2
+            //simplify polygon, remove vertexes that are on the same line
             poly = SimplifyPolygon(poly);
             window = SimplifyPolygon(window);
             
@@ -24,7 +23,6 @@ namespace GreinerHormannAlgorithm
             //lets check if they are clockwise, if they are not, then we form new polygons with clockwise input
             Polygon2 polyClockwise = GetClockwisePoly(poly);
             Polygon2 windowClockwise = GetClockwisePoly(window);
-            
             
             // step 1:
             // form new polygons with intersection connections and
@@ -104,10 +102,8 @@ namespace GreinerHormannAlgorithm
             List<Polygon2> result = new List<Polygon2>();
             
             //initialize needed parameters
-            List<MyVector2> visitedIntersection = new List<MyVector2>();
-            int totalEnteringIntersections = poly.Count(cV => cV.IsEntering);
-            
-            //Debug.Log($" Enterings = {totalEnteringIntersections}");
+            HashSet<MyVector2> visitedIntersection = new HashSet<MyVector2>();
+            int totalEnteringIntersections = poly.Count(cV => cV.IsIntersection);
             
             while (visitedIntersection.Count <= totalEnteringIntersections)
             {
@@ -115,7 +111,6 @@ namespace GreinerHormannAlgorithm
                 //get any entering intersection point
                 ClipVertex2 entering = poly.FirstOrDefault(cV => cV.IsEntering && !visitedIntersection.Contains(cV.Coord));
                 ClipVertex2 curr = entering;
-
                 
                 if(entering == null)
                     break;
@@ -135,9 +130,7 @@ namespace GreinerHormannAlgorithm
                     curr = curr.Next;
                     if (curr.IsIntersection)
                     {
-                        if (curr.IsEntering) 
-                            visitedIntersection.Add(curr.Coord);
-                
+                        visitedIntersection.Add(curr.Coord);
                         curr = curr.Neighbour;
                     }
                 

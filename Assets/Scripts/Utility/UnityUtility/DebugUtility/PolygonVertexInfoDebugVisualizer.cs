@@ -14,7 +14,7 @@ namespace Utility.UnityUtility.DebugUtility
         private List<List<Vector3>> _finalPoly;
         private (List<List<ClipVertex2>> polys, List<Polygon2> finalPoly) _polyToDraw;
         private List<Mesh> _meshes = new();
-        private HashSet<MyVector2> _uniques;
+        private List<VerticalIntersectingLine> _uniques;
 
         private void Awake()
         {
@@ -95,11 +95,25 @@ namespace Utility.UnityUtility.DebugUtility
 
             if (_uniques != null && _uniques.Count != 0)
             {
-                foreach (MyVector2 v in _uniques)
+                foreach (VerticalIntersectingLine line in _uniques)
                 {
-                    Gizmos.DrawSphere(v.ToVector3(), 0.2f);
+                    Gizmos.DrawLine(line.Line.P1.ToVector3(), line.Line.P2.ToVector3());
+                    Handles.Label(line.SortedUniqueIntersections[0].ToVector3() + Quaternion.AngleAxis(0, Vector3.forward) * Vector3.up * 0.5f, 
+                        $"{_uniques.IndexOf(line)}");
+                    foreach (MyVector2 p in line.SortedUniqueIntersections)
+                    {
+                        Gizmos.DrawSphere(p.ToVector3(), 0.1f);
+                        // Handles.Label(p.ToVector3() + Quaternion.AngleAxis(0, Vector3.forward) * Vector3.up * 0.2f, 
+                        //     $"{line.SortedUniqueIntersections}");
+                    }
+                    //Debug.Log($"line{_uniques.IndexOf(line)} | {string.Join(" ", line._sortedUniqueIntersections.Select(v => v.Y))}");
                 }
             }
+        }
+
+        public Color GetRandomColor()
+        {
+            return new Color(Random.value, Random.value, Random.value);
         }
 
         public void Draw((List<List<ClipVertex2>> polys, List<Polygon2> finalPoly) polyToDraw)
@@ -132,7 +146,7 @@ namespace Utility.UnityUtility.DebugUtility
             return finalMesh;
         }
 
-        public void Draw2(HashSet<MyVector2> set)
+        public void Draw2(List<VerticalIntersectingLine> set)
         {
             _uniques = set;
         }

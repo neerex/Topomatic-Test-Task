@@ -6,7 +6,7 @@ namespace Utility
 {
     public static class MathUtility
     {
-        public const float Epsilon = 0.000001f;
+        public const float Epsilon = 0.00001f;
         
         public static int ClampListIndex(int index, int listSize) => 
             (index % listSize + listSize) % listSize;
@@ -57,7 +57,13 @@ namespace Utility
             value >= 0f ? 1 : -1;
 
         public static bool IsZero(this float value) => 
-            Math.Abs(value) < Epsilon;
+            Math.Abs(value) <= Epsilon;
+
+        public static bool EqualsWithEpsilon(this float self, float value)
+        {
+            float diff = self - value;
+            return diff > -Epsilon && diff < Epsilon;
+        }
 
         public static int Mod(this int value, int length) => 
             value >= 0 ? value % length : (value % length + length) % length;
