@@ -20,21 +20,6 @@ namespace DataStructures
         public static float SqrMagnitude(MyVector2 a) => 
             a.X * a.X + a.Y * a.Y;
 
-        public static MyVector2 operator +(MyVector2 a, MyVector2 b) => 
-            new MyVector2(a.X + b.X, a.Y + b.Y);
-        
-        public static MyVector2 operator -(MyVector2 a, MyVector2 b) => 
-            new MyVector2(a.X - b.X, a.Y - b.Y);
-        
-        public static MyVector2 operator *(float b, MyVector2 a) => 
-            new MyVector2(a.X * b, a.Y * b);
-        
-        public static MyVector2 operator *(MyVector2 a, float b) => 
-            new MyVector2(a.X * b, a.Y * b);
-        
-        public static float operator *(MyVector2 v, MyVector2 w) => 
-            v.X * w.X + v.Y * w.Y;
-
         public static float Magnitude(MyVector2 a) => 
             (float)Math.Sqrt(SqrMagnitude(a));
 
@@ -50,6 +35,24 @@ namespace DataStructures
             MyVector2 normalized = new MyVector2(v.X / magnitude, v.Y / magnitude);
             return normalized;
         }
+        
+        public static MyVector2 operator +(MyVector2 a, MyVector2 b) => 
+            new MyVector2(a.X + b.X, a.Y + b.Y);
+        
+        public static MyVector2 operator -(MyVector2 a, MyVector2 b) => 
+            new MyVector2(a.X - b.X, a.Y - b.Y);
+        
+        public static MyVector2 operator *(float b, MyVector2 a) => 
+            new MyVector2(a.X * b, a.Y * b);
+        
+        public static MyVector2 operator *(MyVector2 a, float b) => 
+            new MyVector2(a.X * b, a.Y * b);
+        
+        public static MyVector2 operator /(MyVector2 a, float b) => 
+            new MyVector2(a.X / b, a.Y / b);
+        
+        public static float operator *(MyVector2 v, MyVector2 w) => 
+            v.X * w.X + v.Y * w.Y;
         
         public bool Equals(MyVector2 v)
         {

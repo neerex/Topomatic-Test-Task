@@ -2,25 +2,21 @@
 
 namespace DataStructures
 {
-    
-    public struct Triangle2
+    public readonly struct Triangle2
     {
-        //Corners
-        public MyVector2 P1;
-        public MyVector2 P2;
-        public MyVector2 P3;
+        public readonly MyVector2 P1;
+        public readonly MyVector2 P2;
+        public readonly MyVector2 P3;
+        public readonly MyVector2 Centroid;
 
         public Triangle2(MyVector2 p1, MyVector2 p2, MyVector2 p3)
         {
             P1 = p1;
             P2 = p2;
             P3 = p3;
+            Centroid = (P1 + P2 + P3) / 3f;
         }
-        
-        //Change orientation of triangle from cw -> ccw or ccw -> cw
-        public void ChangeOrientation() => 
-            (P1, P2) = (P2, P1);
-        
+
         public float MinX() => 
             Math.Min(P1.X, Math.Min(P2.X, P3.X));
 

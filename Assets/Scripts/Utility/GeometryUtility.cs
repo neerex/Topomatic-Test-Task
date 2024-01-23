@@ -21,40 +21,27 @@ namespace Utility
             float rxs = r.Cross(s);
             float qpxr = (q - p).Cross(r);
 
-            // If r x s = 0 and (q - p) x r = 0, then the two lines are collinear.
             if (rxs.IsZero() && qpxr.IsZero())
             {
-                // 1. If either  0 <= (q - p) * r <= r * r or 0 <= (p - q) * s <= * s
-                // then the two lines are overlapping,
                 if (considerCollinearOverlapAsIntersect)
-                    if ((0 <= (q - p)*r && (q - p)*r <= r*r) || (0 <= (p - q)*s && (p - q)*s <= s*s))
+                    if ((0 <= (q - p) * r && (q - p) * r <= r * r) || (0 <= (p - q) * s && (p - q) * s <= s * s))
                         return true;
-
-                // 2. If neither 0 <= (q - p) * r = r * r nor 0 <= (p - q) * s <= s * s
-                // then the two lines are collinear but disjoint.
-                // No need to implement this expression, as it follows from the expression above.
+                
                 return false;
             }
 
-            // 3. If r x s = 0 and (q - p) x r != 0, then the two lines are parallel and non-intersecting.
             if (rxs.IsZero() && !qpxr.IsZero())
                 return false;
             
-            var t = (q - p).Cross(s)/rxs;
-            var u = (q - p).Cross(r)/rxs;
+            var t = (q - p).Cross(s) / rxs;
+            var u = (q - p).Cross(r) / rxs;
 
-            // 4. If r x s != 0 and 0 <= t <= 1 and 0 <= u <= 1
-            // the two line segments meet at the point p + t r = q + u s.
             if (!rxs.IsZero() && t is >= 0 and <= 1 && u is >= 0 and <= 1)
             {
-                // We can calculate the intersection point using either t or u.
                 intersection = p + t * r;
-
-                // An intersection was found.
                 return true;
             }
 
-            // 5. Otherwise, the two line segments are not parallel but do not intersect.
             return false;
         }
         
@@ -132,6 +119,8 @@ namespace Utility
 
         public static bool IsPointOnLine(Edge2 edge, MyVector2 p)
         {
+            if (edge.StartsOrEndsWith(p)) return true;
+            
             float epsilon = MathUtility.Epsilon;
             var a_b = edge.P1 - edge.P2;
             var a_p = edge.P1 - p;
@@ -388,8 +377,5 @@ namespace Utility
 
             return center;
         }
-        
-        public static float GetSignedDistanceFromPointToPlane(MyVector2 pointPos, Plane2 plane) => 
-            MyVector2.Dot(plane.Normal, pointPos - plane.Pos);
     }
 }

@@ -14,6 +14,7 @@ namespace Utility.UnityUtility.DebugUtility
         private List<List<Vector3>> _finalPoly;
         private (List<List<ClipVertex2>> polys, List<Polygon2> finalPoly) _polyToDraw;
         private List<Mesh> _meshes = new();
+        private HashSet<MyVector2> _uniques;
 
         private void Awake()
         {
@@ -46,50 +47,58 @@ namespace Utility.UnityUtility.DebugUtility
             //     }
             // }
 
-            if (_polyToDraw.polys != null)
+            // if (_polyToDraw.polys != null)
+            // {
+            //     var angle = 45;
+            //     foreach (List<ClipVertex2> poly in _polyToDraw.polys)
+            //     {
+            //         GUIStyle style = new GUIStyle();
+            //         style.normal.textColor = _polyToDraw.polys.IndexOf(poly) % 2 == 0 ? Color.blue : Color.green;
+            //         
+            //         for (int i = 0; i < poly.Count; i++)
+            //         {
+            //             MyVector2 p = poly[i].Coord;
+            //             
+            //             Gizmos.color = Color.black;
+            //
+            //             if (poly[i].IsIntersection && poly[i].IsEntering)
+            //                 Gizmos.color = Color.yellow;
+            //             
+            //             if (poly[i].IsIntersection && !poly[i].IsEntering)
+            //                 Gizmos.color = Color.magenta;
+            //
+            //             if (poly[i].IsOnOtherPolygonEdge)
+            //                 Gizmos.color = Color.cyan;
+            //             
+            //             if (poly[i].IsOnTheVertexOfOtherPolygon)
+            //                 Gizmos.color = Color.red;
+            //             
+            //             var radius = Gizmos.color == Color.black ? 0.1f : 0.05f;
+            //             Gizmos.DrawSphere(p.ToVector3() + Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up * 0.1f, radius);
+            //             Handles.Label(p.ToVector3() + Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up * 0.3f, $"{i}", style);
+            //         }
+            //         angle += 45;
+            //     }
+            // }
+            //
+            // if (_polyToDraw.finalPoly != null && _polyToDraw.finalPoly.Count != 0)
+            // {
+            //     //Debug.Log($"Total final polys {_polyToDraw.finalPoly.Count}");
+            //     var polys = new List<List<MyVector2>>();
+            //     foreach (Polygon2 poly in _polyToDraw.finalPoly) 
+            //         polys.Add(poly.Points.ToList());
+            //
+            //     var mesh = CreateMeshFromPolyVertexList(polys);
+            //     Gizmos.color = new Color(0,1,1,0.5f);
+            //     Gizmos.DrawMesh(mesh, Vector3.zero);
+            // }
+
+            if (_uniques != null && _uniques.Count != 0)
             {
-                var angle = 45;
-                foreach (List<ClipVertex2> poly in _polyToDraw.polys)
+                foreach (MyVector2 v in _uniques)
                 {
-                    GUIStyle style = new GUIStyle();
-                    style.normal.textColor = _polyToDraw.polys.IndexOf(poly) % 2 == 0 ? Color.blue : Color.green;
-                    
-                    for (int i = 0; i < poly.Count; i++)
-                    {
-                        MyVector2 p = poly[i].Coord;
-                        
-                        Gizmos.color = Color.black;
-
-                        if (poly[i].IsIntersection && poly[i].IsEntering)
-                            Gizmos.color = Color.yellow;
-                        
-                        if (poly[i].IsIntersection && !poly[i].IsEntering)
-                            Gizmos.color = Color.magenta;
-
-                        if (poly[i].IsOnOtherPolygonEdge)
-                            Gizmos.color = Color.cyan;
-                        
-                        if (poly[i].IsOnTheVertexOfOtherPolygon)
-                            Gizmos.color = Color.red;
-                        
-                        var radius = Gizmos.color == Color.black ? 0.1f : 0.05f;
-                        Gizmos.DrawSphere(p.ToVector3() + Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up * 0.1f, radius);
-                        Handles.Label(p.ToVector3() + Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.up * 0.3f, $"{i}", style);
-                    }
-                    angle += 45;
+                    Gizmos.DrawSphere(v.ToVector3(), 0.2f);
                 }
-            }
-
-            if (_polyToDraw.finalPoly != null && _polyToDraw.finalPoly.Count != 0)
-            {
-                //Debug.Log($"Total final polys {_polyToDraw.finalPoly.Count}");
-                var polys = new List<List<MyVector2>>();
-                foreach (Polygon2 poly in _polyToDraw.finalPoly) 
-                    polys.Add(poly.Points.ToList());
-
-                var mesh = CreateMeshFromPolyVertexList(polys);
-                Gizmos.color = new Color(0,1,1,0.5f);
-                Gizmos.DrawMesh(mesh, Vector3.zero);
             }
         }
 
@@ -121,6 +130,11 @@ namespace Utility.UnityUtility.DebugUtility
             finalMesh.CombineMeshes(combine, true, false);
             finalMesh.RecalculateNormals();
             return finalMesh;
+        }
+
+        public void Draw2(HashSet<MyVector2> set)
+        {
+            _uniques = set;
         }
     }
 }

@@ -26,6 +26,7 @@ namespace Bootstrap
 
             polygonClippingController.OnPolygonsRecalculation += PolygonVertexInfoDebugVisualizer.Instance.Initialize;
             polygonClippingController.OnDraw += PolygonVertexInfoDebugVisualizer.Instance.Draw;
+            polygonClippingController.OnDraw2 += PolygonVertexInfoDebugVisualizer.Instance.Draw2;
             
             polygonClippingController.CalculatePolygons();
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Controllers.Interfaces;
 using DataStructures;
 using GreinerHormannAlgorithm;
@@ -21,6 +20,7 @@ namespace Controllers
         private (List<List<ClipVertex2>> polys, List<Polygon2> finalPoly) _drawPoly;
         public event PolygonRecalculationHandler OnPolygonsRecalculation;
         public event Action<(List<List<ClipVertex2>> polys, List<Polygon2> finalPoly)> OnDraw;
+        public event Action<HashSet<MyVector2>> OnDraw2;
 
         public PolygonClippingController(IPolygonProvider polygonProvider)
         {
@@ -36,11 +36,15 @@ namespace Controllers
             _polyA = _polygonProvider.GetPolyVertices(PolygonType.A);
             _polyB = _polygonProvider.GetPolyVertices(PolygonType.B);
 
-            var polyA = new Polygon2(_polyA);
-            var polyB = new Polygon2(_polyB);
+            Polygon2 polyA = new Polygon2(_polyA);
+            Polygon2 polyB = new Polygon2(_polyB);
 
-            _drawPoly = PolyClipper.PolygonClipper(polyA, polyB, BooleanOperation.Intersection);
-            OnDraw?.Invoke(_drawPoly);
+            HashSet<MyVector2> uniques = PolygonClippingAlgorithm.PolygonClipper(polyA, polyB, BooleanOperation.Intersection);
+            OnDraw2?.Invoke(uniques);
+            Debug.Log($"{uniques.Count}");
+            
+            //_drawPoly = PolyClipper.PolygonClipper(polyA, polyB, BooleanOperation.Intersection);
+            //OnDraw?.Invoke(_drawPoly);
             //Debug.Log($"{_drawPoly?.First().Count}");
             
             //_finalPolygon = GreinerHormann.ClipPolygons(_polyA, _polyB, _operation);

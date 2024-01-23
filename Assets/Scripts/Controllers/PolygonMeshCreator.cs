@@ -23,7 +23,7 @@ namespace Controllers
             _meshes.Clear();
             foreach (var poly in finalPoly)
             {
-                HashSet<Triangle2> triangulation = EarClipping.Triangulate(poly.Distinct().ToList(), false);
+                HashSet<Triangle2> triangulation = EarClipping.Triangulate(poly, false);
                 
                 if (triangulation == null)
                     continue;
