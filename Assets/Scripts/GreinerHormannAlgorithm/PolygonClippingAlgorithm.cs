@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DataStructures;
 using Unity.VisualScripting;
+using UnityEngine;
 using Utility;
 using GeometryUtility = Utility.GeometryUtility;
 
@@ -10,7 +11,8 @@ namespace GreinerHormannAlgorithm
 {
     public static class PolygonClippingAlgorithm
     {
-        public static List<VerticalIntersectingLine> PolygonClipper(Polygon2 poly, Polygon2 window, BooleanOperation operation)
+        public static (List<List<Edge2>> list, List<VerticalIntersectingLine> verticalIntersectionLines, List<Triangle2> triangles) 
+            PolygonClipper(Polygon2 poly, Polygon2 window, BooleanOperation operation)
         {
             //check if polygon is self intersecting then return empty result
             if (poly.IsSelfIntersecting()) return default;
@@ -34,8 +36,75 @@ namespace GreinerHormannAlgorithm
             PopulateUniqueVerticesSetWithIntersections(poly, window, verticesAndIntersectionPoints);
 
             List<VerticalIntersectingLine> verticalIntersectionLines = InitializeVerticalIntersectionLines(verticesAndIntersectionPoints, poly, window);
-            CalculatePolygonEdges(verticalIntersectionLines, poly, window);
-            return verticalIntersectionLines;
+            var list = CalculatePolygonEdges(verticalIntersectionLines, poly, window);
+            var triangles = TriangulateSectors(list);
+
+            var trianglesResultOperation = new List<Triangle2>();
+            if (operation == BooleanOperation.Intersection)
+            {
+                trianglesResultOperation = FilterTriangles(IntersectionFilter(poly, window), triangles);
+            }
+            else if(operation == BooleanOperation.Union)
+            {
+                trianglesResultOperation = FilterTriangles(UnionFilter(poly, window), triangles);
+            }
+            
+            return (list, verticalIntersectionLines, trianglesResultOperation);
+        }
+
+        private static List<Triangle2> FilterTriangles(Func<Triangle2, bool> filter, List<Triangle2> allTriangles) => 
+            allTriangles.Where(filter).ToList();
+
+        private static Func<Triangle2, bool> IntersectionFilter(Polygon2 poly, Polygon2 window) => 
+            t => poly.Contains(t.Centroid) && window.Contains(t.Centroid);
+        
+        private static Func<Triangle2, bool> UnionFilter(Polygon2 poly, Polygon2 window) => 
+            t => poly.Contains(t.Centroid) || window.Contains(t.Centroid);
+
+        private static List<Triangle2> TriangulateSectors(List<List<Edge2>> list)
+        {
+            var triangles = new List<Triangle2>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                for (int j = 0; j < list[i].Count - 1; j++)
+                {
+                    var curr = list[i][j];
+                    var next = list[i][j+1];
+                    TriangulateEdge(curr, next, ref triangles);
+                }
+            }
+            return triangles;
+        }
+
+        private static void TriangulateEdge(Edge2 top, Edge2 bottom, ref List<Triangle2> triangles)
+        {
+            if (top.P1.Equals(bottom.P1))
+            {
+                var p1 = top.P1;
+                var p2 = top.P2;
+                var p3 = bottom.P2;
+                var triangle = new Triangle2(p1, p2, p3);
+                triangles.Add(triangle);
+            }
+            else if (top.P2.Equals(bottom.P2))
+            {
+                var p1 = top.P1;
+                var p2 = top.P2;
+                var p3 = bottom.P1;
+                var triangle = new Triangle2(p1, p2, p3);
+                triangles.Add(triangle);
+            }
+            else
+            {
+                var p1 = top.P1;
+                var p2 = top.P2;
+                var p3 = bottom.P1;
+                var p4 = bottom.P2;
+                var triangle1 = new Triangle2(p1, p2, p4);
+                var triangle2 = new Triangle2(p1, p4, p3);
+                triangles.Add(triangle1);
+                triangles.Add(triangle2);
+            }
         }
 
         private static List<VerticalIntersectingLine> InitializeVerticalIntersectionLines(List<MyVector2> verticesAndIntersectionPoints, 
@@ -78,28 +147,46 @@ namespace GreinerHormannAlgorithm
                 
                 int currIndex = 0;
                 int nextIndex = 0;
-                
-                while (currIndex < currPoints.Count - 1 && nextIndex < nextPoint.Count - 1)
+
+                //Debug.Log($"Line{i}Count: {currPoints.Count} Line{i+1}Count: {nextPoint.Count}");
+
+                for (var j = 0; j < currPoints.Count; j++)
                 {
-                    if (nextIndex == nextPoint.Count)
+                    var v1 = currPoints[j];
+                    for (var k = 0; k < nextPoint.Count; k++)
                     {
-                        currIndex++;
-                        nextIndex = Math.Clamp(nextIndex - 1, 0, nextPoint.Count - 1);
-                    }
-                        
-                    var edge = new Edge2(currPoints[currIndex], nextPoint[nextIndex]);
-                    if (IsEdgeLiesOnPolygonPerimeter(poly, edge) || IsEdgeLiesOnPolygonPerimeter(window, edge))
-                    {
-                        sectorEdges.Add(edge);
-                        nextIndex++;
-                    }
-                    else
-                    {
-                        currIndex++;
-                        nextIndex--;
+                        var v2 = nextPoint[k];
+                        var edge = new Edge2(v1, v2);
+                        if (IsEdgeLiesOnPolygonPerimeter(poly, edge) || IsEdgeLiesOnPolygonPerimeter(window, edge))
+                        {
+                            //Debug.Log($"Found laying edge. Lines: {i}-{i + 1}. Points: {j} and {k}");
+                            if(!sectorEdges.Contains(edge))
+                                sectorEdges.Add(edge);
+                        }
                     }
                 }
-                result.Add(sectorEdges);
+
+                // while (currIndex + nextIndex < currPoints.Count + nextPoint.Count - 2)
+                // {
+                //     var edge = new Edge2(currPoints[currIndex], nextPoint[nextIndex]);
+                //     if (IsEdgeLiesOnPolygonPerimeter(poly, edge) || IsEdgeLiesOnPolygonPerimeter(window, edge))
+                //     {
+                //         Debug.Log($"Found laying edge. Lines: {i}-{i+1}. Points: {currIndex} and {nextIndex}");
+                //         sectorEdges.Add(edge);
+                //         if(currIndex + nextIndex == currPoints.Count + nextPoint.Count - 2)
+                //             break;
+                //         
+                //         nextIndex = Math.Clamp(nextIndex + 1, 0, nextPoint.Count - 1);
+                //     }
+                //     else
+                //     {
+                //         Debug.Log($"Lines: {i}-{i+1}. Points: {currIndex} and {nextIndex} not laying on any edge");
+                //         currIndex = Math.Clamp(currIndex + 1, 0, currPoints.Count - 1);
+                //         nextIndex = Math.Clamp(nextIndex - 1, 0, nextPoint.Count - 1);
+                //     }
+                // }
+                
+                result.Add(new List<Edge2>(sectorEdges));
             }
 
             return result;

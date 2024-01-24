@@ -17,7 +17,6 @@ namespace DataStructures
         }
 
         public MyVector2 this[int i] => Points[i.Mod(Count)];
-        public Edge2 GetEdgeAt(int i) => Edges[i.Mod(Edges.Count)];
         
         public int Count => Points.Count;
         public bool IsClockwise => SignedArea > 0;

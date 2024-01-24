@@ -6,7 +6,7 @@ namespace Utility
 {
     public static class MathUtility
     {
-        public const float Epsilon = 0.00001f;
+        public const float Epsilon = 0.000001f;
         
         public static int ClampListIndex(int index, int listSize) => 
             (index % listSize + listSize) % listSize;

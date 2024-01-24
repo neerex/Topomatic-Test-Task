@@ -15,6 +15,8 @@ namespace Utility.UnityUtility.DebugUtility
         private (List<List<ClipVertex2>> polys, List<Polygon2> finalPoly) _polyToDraw;
         private List<Mesh> _meshes = new();
         private List<VerticalIntersectingLine> _uniques;
+        private List<List<Edge2>> _edges;
+        private List<Triangle2> _triangles;
 
         private void Awake()
         {
@@ -93,21 +95,47 @@ namespace Utility.UnityUtility.DebugUtility
             //     Gizmos.DrawMesh(mesh, Vector3.zero);
             // }
 
-            if (_uniques != null && _uniques.Count != 0)
+            // if (_uniques != null && _uniques.Count != 0)
+            // {
+            //     foreach (VerticalIntersectingLine line in _uniques)
+            //     {
+            //         Gizmos.DrawLine(line.Line.P1.ToVector3(), line.Line.P2.ToVector3());
+            //         Handles.Label(line.SortedUniqueIntersections[0].ToVector3() + Quaternion.AngleAxis(0, Vector3.forward) * Vector3.up * 0.5f, 
+            //             $"{_uniques.IndexOf(line)}");
+            //
+            //         int i = 0;
+            //         foreach (MyVector2 p in line.SortedUniqueIntersections)
+            //         {
+            //             Gizmos.DrawSphere(p.ToVector3(), 0.1f);
+            //             Handles.Label(p.ToVector3() + Quaternion.AngleAxis(0, Vector3.forward) * Vector3.up * 0.2f, 
+            //                 $"{i}");
+            //             i++;
+            //         }
+            //     }
+            // }
+
+            // if (_edges != null && _edges.Count != 0)
+            // {
+            //     var edges = _edges.SelectMany(e => e);
+            //     foreach (Edge2 edge in edges)
+            //     {
+            //         Gizmos.DrawLine(edge.P1.ToVector3(), edge.P2.ToVector3());
+            //         Gizmos.DrawSphere(edge.P1.ToVector3(), 0.1f);
+            //         Gizmos.DrawSphere(edge.P2.ToVector3(), 0.1f);
+            //     }
+            // }
+
+            if (_triangles != null && _triangles.Count != 0)
             {
-                foreach (VerticalIntersectingLine line in _uniques)
+                foreach (Triangle2 triangle in _triangles)
                 {
-                    Gizmos.DrawLine(line.Line.P1.ToVector3(), line.Line.P2.ToVector3());
-                    Handles.Label(line.SortedUniqueIntersections[0].ToVector3() + Quaternion.AngleAxis(0, Vector3.forward) * Vector3.up * 0.5f, 
-                        $"{_uniques.IndexOf(line)}");
-                    foreach (MyVector2 p in line.SortedUniqueIntersections)
-                    {
-                        Gizmos.DrawSphere(p.ToVector3(), 0.1f);
-                        // Handles.Label(p.ToVector3() + Quaternion.AngleAxis(0, Vector3.forward) * Vector3.up * 0.2f, 
-                        //     $"{line.SortedUniqueIntersections}");
-                    }
-                    //Debug.Log($"line{_uniques.IndexOf(line)} | {string.Join(" ", line._sortedUniqueIntersections.Select(v => v.Y))}");
+                    Gizmos.DrawLine(triangle.P1.ToVector3(), triangle.P2.ToVector3());
+                    Gizmos.DrawLine(triangle.P2.ToVector3(), triangle.P3.ToVector3());
+                    Gizmos.DrawLine(triangle.P3.ToVector3(), triangle.P1.ToVector3());
                 }
+                var mesh = CreateMeshFromPolyVertexList(_triangles);
+                Gizmos.color = new Color(0,1,1,0.3f);
+                Gizmos.DrawMesh(mesh, Vector3.zero);
             }
         }
 
@@ -145,10 +173,30 @@ namespace Utility.UnityUtility.DebugUtility
             finalMesh.RecalculateNormals();
             return finalMesh;
         }
-
-        public void Draw2(List<VerticalIntersectingLine> set)
+        
+        public Mesh CreateMeshFromPolyVertexList(List<Triangle2> finalPoly)
         {
-            _uniques = set;
+            _meshes.Clear();
+            HashSet<Triangle2> triangulation = finalPoly.ToHashSet();
+            Mesh mesh = MeshUtility.Triangles2ToMesh(triangulation, false);
+            _meshes.Add(mesh);
+            
+            CombineInstance[] combine = new CombineInstance[_meshes.Count];
+
+            for (int i = 0; i < _meshes.Count; i++) 
+                combine[i].mesh = _meshes[i];
+
+            Mesh finalMesh = new Mesh();
+            finalMesh.CombineMeshes(combine, true, false);
+            finalMesh.RecalculateNormals();
+            return finalMesh;
+        }
+
+        public void Draw2((List<List<Edge2>> list, List<VerticalIntersectingLine> verticalIntersectionLines, List<Triangle2> triangles) tuple)
+        {
+            _edges = tuple.list;
+            _uniques = tuple.verticalIntersectionLines;
+            _triangles = tuple.triangles;
         }
     }
 }

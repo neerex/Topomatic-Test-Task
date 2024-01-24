@@ -20,7 +20,7 @@ namespace Controllers
         private (List<List<ClipVertex2>> polys, List<Polygon2> finalPoly) _drawPoly;
         public event PolygonRecalculationHandler OnPolygonsRecalculation;
         public event Action<(List<List<ClipVertex2>> polys, List<Polygon2> finalPoly)> OnDraw;
-        public event Action<List<VerticalIntersectingLine>> OnDraw2;
+        public event Action<(List<List<Edge2>> list, List<VerticalIntersectingLine> verticalIntersectionLines, List<Triangle2> triangles)> OnDraw2;
 
         public PolygonClippingController(IPolygonProvider polygonProvider)
         {
@@ -39,9 +39,8 @@ namespace Controllers
             Polygon2 polyA = new Polygon2(_polyA);
             Polygon2 polyB = new Polygon2(_polyB);
 
-            List<VerticalIntersectingLine> uniques = PolygonClippingAlgorithm.PolygonClipper(polyA, polyB, BooleanOperation.Intersection);
+            var uniques = PolygonClippingAlgorithm.PolygonClipper(polyA, polyB, _operation);
             OnDraw2?.Invoke(uniques);
-            //Debug.Log($"{uniques.Count}");
             
             //_drawPoly = PolyClipper.PolygonClipper(polyA, polyB, BooleanOperation.Intersection);
             //OnDraw?.Invoke(_drawPoly);
