@@ -7,10 +7,10 @@ namespace DataStructures
         public readonly MyVector2 P1;
         public readonly MyVector2 P2;
         
-        private readonly float _minX;
-        private readonly float _minY;
-        private readonly float _maxX;
-        private readonly float _maxY;
+        private readonly double _minX;
+        private readonly double _minY;
+        private readonly double _maxX;
+        private readonly double _maxY;
 
         public Edge2(MyVector2 p1, MyVector2 p2)
         {

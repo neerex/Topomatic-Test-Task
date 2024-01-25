@@ -24,14 +24,14 @@ namespace DataStructures
         public bool IsPointOnAnyEdge(MyVector2 point) => Edges.Any(e => GeometryUtility.IsPointOnLine(e, point));
         public bool Contains(MyVector2 point) => WindingNumber(point) != 0;
 
-        public float MinY() => Points.Min(p => p.Y);
-        public float MaxY() => Points.Max(p => p.Y);
+        public double MinY() => Points.Min(p => p.Y);
+        public double MaxY() => Points.Max(p => p.Y);
 
-        private float SignedArea 
+        private double SignedArea 
         {
             get 
             {
-                float sum = 0f;
+                double sum = 0f;
                 for( int i = 0; i < Count; i++ )
                 {
                     int iNext = (i + 1) % Count;
@@ -63,7 +63,7 @@ namespace DataStructures
             
             return winding;
             
-            float IsLeft( MyVector2 a, MyVector2 b, MyVector2 p ) => 
+            double IsLeft( MyVector2 a, MyVector2 b, MyVector2 p ) => 
                 MathUtility.SignWithZero(MathUtility.Determinant(a.To(p), a.To(b)));
         }
 
@@ -71,10 +71,20 @@ namespace DataStructures
         {
             for (int i = 0; i < Edges.Count - 1; i++)
             {
+                var edge1 = Edges[i];
                 for (int j = i + 1; j < Edges.Count; j++)
                 {
-                    var edge1 = Edges[i];
                     var edge2 = Edges[j];
+                    
+                    if(edge1.NeverIntersectsWith(edge2))
+                        continue;
+                    
+                    if(edge1.SameEdge(edge2))
+                        return true;
+                    
+                    if(GeometryUtility.IsEdgeTouchingEdge(edge1, edge2, out _))
+                        continue;
+
                     if (GeometryUtility.LineLine(edge1, edge2, false))
                         return true;
                 }

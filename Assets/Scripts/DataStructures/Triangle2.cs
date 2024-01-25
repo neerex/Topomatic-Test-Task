@@ -17,18 +17,6 @@ namespace DataStructures
             Centroid = (P1 + P2 + P3) / 3f;
         }
 
-        public float MinX() => 
-            Math.Min(P1.X, Math.Min(P2.X, P3.X));
-
-        public float MaxX() => 
-            Math.Max(P1.X, Math.Max(P2.X, P3.X));
-
-        public float MinY() => 
-            Math.Min(P1.Y, Math.Min(P2.Y, P3.Y));
-
-        public float MaxY() => 
-            Math.Max(P1.Y, Math.Max(P2.Y, P3.Y));
-        
         //Find the opposite edge to a vertex
         public Edge2 FindOppositeEdgeToVertex(MyVector2 p)
         {

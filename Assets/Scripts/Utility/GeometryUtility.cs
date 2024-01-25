@@ -18,8 +18,8 @@ namespace Utility
             
             MyVector2 r = p2 - p;
             MyVector2 s = q2 - q;
-            float rxs = r.Cross(s);
-            float qpxr = (q - p).Cross(r);
+            double rxs = r.Cross(s);
+            double qpxr = (q - p).Cross(r);
 
             if (rxs.IsZero() && qpxr.IsZero())
             {
@@ -47,29 +47,29 @@ namespace Utility
         
         public static bool LineLine(Edge2 a, Edge2 b, bool includeEndPoints)
         {
-            float epsilon = MathUtility.Epsilon;
+            double epsilon = MathUtility.Epsilon;
             bool isIntersecting = false;
 
-            float denominator = (b.P2.Y - b.P1.Y) * (a.P2.X - a.P1.X) - (b.P2.X - b.P1.X) * (a.P2.Y - a.P1.Y);
+            double denominator = (b.P2.Y - b.P1.Y) * (a.P2.X - a.P1.X) - (b.P2.X - b.P1.X) * (a.P2.Y - a.P1.Y);
 
             //if denominator is 0 the lines are parallel
             if (denominator > epsilon || denominator < -epsilon)
             {
-                float u_a = ((b.P2.X - b.P1.X) * (a.P1.Y - b.P1.Y) - (b.P2.Y - b.P1.Y) * (a.P1.X - b.P1.X)) / denominator;
-                float u_b = ((a.P2.X - a.P1.X) * (a.P1.Y - b.P1.Y) - (a.P2.Y - a.P1.Y) * (a.P1.X - b.P1.X)) / denominator;
+                double u_a = ((b.P2.X - b.P1.X) * (a.P1.Y - b.P1.Y) - (b.P2.Y - b.P1.Y) * (a.P1.X - b.P1.X)) / denominator;
+                double u_b = ((a.P2.X - a.P1.X) * (a.P1.Y - b.P1.Y) - (a.P2.Y - a.P1.Y) * (a.P1.X - b.P1.X)) / denominator;
                 
                 if (includeEndPoints)
                 {
-                    float zero = -epsilon;
-                    float one = 1f + epsilon;
+                    double zero = -epsilon;
+                    double one = 1f + epsilon;
                     
                     if (u_a >= zero && u_a <= one && u_b >= zero && u_b <= one) 
                         isIntersecting = true;
                 }
                 else
                 {
-                    float zero = epsilon;
-                    float one = 1f - epsilon;
+                    double zero = epsilon;
+                    double one = 1f - epsilon;
                     
                     if (u_a > zero && u_a < one && u_b > zero && u_b < one) 
                         isIntersecting = true;
@@ -81,8 +81,8 @@ namespace Utility
 
         public static bool LinesParallel(Edge2 a, Edge2 b)
         {
-            float epsilon = MathUtility.Epsilon;
-            float denominator = (b.P2.Y - b.P1.Y) * (a.P2.X - a.P1.X) - (b.P2.X - b.P1.X) * (a.P2.Y - a.P1.Y);
+            double epsilon = MathUtility.Epsilon;
+            double denominator = (b.P2.Y - b.P1.Y) * (a.P2.X - a.P1.X) - (b.P2.X - b.P1.X) * (a.P2.Y - a.P1.Y);
             return Math.Abs(denominator) <= epsilon;
         }
 
@@ -121,7 +121,7 @@ namespace Utility
         {
             if (edge.StartsOrEndsWith(p)) return true;
             
-            float epsilon = MathUtility.Epsilon;
+            double epsilon = MathUtility.Epsilon;
             var a_b = edge.P1 - edge.P2;
             var a_p = edge.P1 - p;
             var b_p = edge.P2 - p;
@@ -134,8 +134,8 @@ namespace Utility
         
         public static MyVector2 GetLineLineIntersectionPoint(Edge2 a, Edge2 b)
         {
-            float denominator = (b.P2.Y - b.P1.Y) * (a.P2.X - a.P1.X) - (b.P2.X - b.P1.X) * (a.P2.Y - a.P1.Y);
-            float u_a = ((b.P2.X - b.P1.X) * (a.P1.Y - b.P1.Y) - (b.P2.Y - b.P1.Y) * (a.P1.X - b.P1.X)) / denominator;
+            double denominator = (b.P2.Y - b.P1.Y) * (a.P2.X - a.P1.X) - (b.P2.X - b.P1.X) * (a.P2.Y - a.P1.Y);
+            double u_a = ((b.P2.X - b.P1.X) * (a.P1.Y - b.P1.Y) - (b.P2.Y - b.P1.Y) * (a.P1.X - b.P1.X)) / denominator;
             MyVector2 intersectionPoint = a.P1 + u_a * (a.P2 - a.P1);
             return intersectionPoint;
         }
@@ -188,7 +188,7 @@ namespace Utility
         }
 
         //Gauss area formula
-        public static float PolygonArea(IReadOnlyList<MyVector2> polygonPoints)
+        public static double PolygonArea(IReadOnlyList<MyVector2> polygonPoints)
         {
             //formula working correctly if the initial poly is in +X +Y quadrant
             //so we move every point on dV, where dV is opposite of Vec2(minX, minY)
@@ -196,7 +196,7 @@ namespace Utility
             MyVector2 firstP = polygonPoints[0] + dV;
             MyVector2 lastP = polygonPoints[^1] + dV;
             
-            float area = lastP.X * firstP.Y - firstP.X * lastP.Y;
+            double area = lastP.X * firstP.Y - firstP.X * lastP.Y;
             int len = polygonPoints.Count;
 
             for (int i = 0; i < len - 1; i++)
@@ -213,14 +213,14 @@ namespace Utility
                 area -= p1.X * p2.Y;
             }
 
-            float totalArea = 0.5f * Math.Abs(area);
+            double totalArea = 0.5f * Math.Abs(area);
             return totalArea;
             
             //formula for getting dV for moving poly into +X +Y area
             MyVector2 GetVectorForMovingPolyIntoPlusXPlusYArea(IReadOnlyList<MyVector2> polygonPoints)
             {
-                float minX = polygonPoints.Min(p => p.X);
-                float minY = polygonPoints.Min(p => p.Y);
+                double minX = polygonPoints.Min(p => p.X);
+                double minY = polygonPoints.Min(p => p.Y);
 
                 return new MyVector2(Math.Abs(minX), Math.Abs(minY));
             }
@@ -229,7 +229,7 @@ namespace Utility
         public static bool IsTriangleOrientedClockwise(MyVector2 p1, MyVector2 p2, MyVector2 p3)
         {
             bool isClockWise = true;
-            float determinant = p1.X * p2.Y + p3.X * p1.Y + p2.X * p3.Y - p1.X * p3.Y - p3.X * p2.Y - p2.X * p1.Y;
+            double determinant = p1.X * p2.Y + p3.X * p1.Y + p2.X * p3.Y - p1.X * p3.Y - p3.X * p2.Y - p2.X * p1.Y;
             
             if (determinant > 0f) 
                 isClockWise = false;
@@ -243,11 +243,11 @@ namespace Utility
             float epsilon = float.Epsilon;
 
             //Based on Barycentric coordinates
-            float denominator = (t.P2.Y - t.P3.Y) * (t.P1.X - t.P3.X) + (t.P3.X - t.P2.X) * (t.P1.Y - t.P3.Y);
+            double denominator = (t.P2.Y - t.P3.Y) * (t.P1.X - t.P3.X) + (t.P3.X - t.P2.X) * (t.P1.Y - t.P3.Y);
 
-            float a = ((t.P2.Y - t.P3.Y) * (p.X - t.P3.X) + (t.P3.X - t.P2.X) * (p.Y - t.P3.Y)) / denominator;
-            float b = ((t.P3.Y - t.P1.Y) * (p.X - t.P3.X) + (t.P1.X - t.P3.X) * (p.Y - t.P3.Y)) / denominator;
-            float c = 1 - a - b;
+            double a = ((t.P2.Y - t.P3.Y) * (p.X - t.P3.X) + (t.P3.X - t.P2.X) * (p.Y - t.P3.Y)) / denominator;
+            double b = ((t.P3.Y - t.P1.Y) * (p.X - t.P3.X) + (t.P1.X - t.P3.X) * (p.Y - t.P3.Y)) / denominator;
+            double c = 1 - a - b;
 
             bool isWithinTriangle = false;
 
@@ -309,10 +309,10 @@ namespace Utility
             MyVector2 circleCenter = CalculateCircleCenter(a, b, c);
 
             //The radius sqr of the circle
-            float radiusSqr = MyVector2.SqrDistance(a, circleCenter);
+            double radiusSqr = MyVector2.SqrDistance(a, circleCenter);
 
             //The distance sqr from the point to the circle center
-            float distPointCenterSqr = MyVector2.SqrDistance(testPoint, circleCenter);
+            double distPointCenterSqr = MyVector2.SqrDistance(testPoint, circleCenter);
             
             //Add/remove a small value becuse we will never be exactly on the edge because of floating point precision issues
             //Mutiply epsilon by two because we are using sqr root???
@@ -358,20 +358,20 @@ namespace Utility
                 (a, b) = (b, a);
 
             //The area of the triangle
-            float X_1 = b.X - a.X;
-            float X_2 = c.X - a.X;
-            float Y_1 = b.Y - a.Y;
-            float Y_2 = c.Y - a.Y;
+            double X_1 = b.X - a.X;
+            double X_2 = c.X - a.X;
+            double Y_1 = b.Y - a.Y;
+            double Y_2 = c.Y - a.Y;
 
-            float A = 0.5f * MathUtility.Det2(X_1, Y_1, X_2, Y_2);
+            double A = 0.5f * MathUtility.Det2(X_1, Y_1, X_2, Y_2);
 
-            float L_10_square = MyVector2.SqrMagnitude(b - a);
-            float L_20_square = MyVector2.SqrMagnitude(c - a);
+            double L_10_square = MyVector2.SqrMagnitude(b - a);
+            double L_20_square = MyVector2.SqrMagnitude(c - a);
 
-            float one_divided_by_4A = 1f / (4f * A);
+            double one_divided_by_4A = 1f / (4f * A);
 
-            float x = a.X + one_divided_by_4A * ((Y_2 * L_10_square) - (Y_1 * L_20_square));
-            float y = a.Y + one_divided_by_4A * ((X_1 * L_20_square) - (X_2 * L_10_square));
+            double x = a.X + one_divided_by_4A * ((Y_2 * L_10_square) - (Y_1 * L_20_square));
+            double y = a.Y + one_divided_by_4A * ((X_1 * L_20_square) - (X_2 * L_10_square));
 
             MyVector2 center = new MyVector2(x, y);
 

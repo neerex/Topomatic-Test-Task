@@ -333,12 +333,12 @@ namespace GreinerHormannAlgorithm
             //Calculate alpha which is how far the intersection Coordinate is between a and b
             //so we can insert this vertex at the correct position
             //pos = start + dir * alpha
-            float alpha = MyVector2.SqrMagnitude(a - intersectionPoint) / MyVector2.SqrMagnitude(a - b);
+            double alpha = MyVector2.SqrMagnitude(a - intersectionPoint) / MyVector2.SqrMagnitude(a - b);
 
             ClipVertex intersectionVertex = new ClipVertex(intersectionPoint)
             {
                 IsIntersection = true,
-                Alpha = alpha
+                Alpha = (float)alpha
             };
 
             //Now we need to insert this intersection point somewhere after currentVertex

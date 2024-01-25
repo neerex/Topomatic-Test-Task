@@ -8,13 +8,13 @@ namespace DataStructures
     {
         public readonly Edge2 Line;
         
-        private readonly float _x;
+        private readonly double _x;
         private readonly List<MyVector2> _uniqueIntersections = new();
         private List<MyVector2> _sortedUniqueIntersections = new();
 
         public IReadOnlyList<MyVector2> SortedUniqueIntersections => _sortedUniqueIntersections.AsReadOnly();
         
-        public VerticalIntersectingLine(float minY, float maxY, float x)
+        public VerticalIntersectingLine(double minY, double maxY, double x)
         {
             //extend scanning line up and down a bit for future easier intersection calculation 
             _x = x;

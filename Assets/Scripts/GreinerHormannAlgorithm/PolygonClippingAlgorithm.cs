@@ -110,14 +110,14 @@ namespace GreinerHormannAlgorithm
         private static List<VerticalIntersectingLine> InitializeVerticalIntersectionLines(List<MyVector2> verticesAndIntersectionPoints, 
             Polygon2 poly, Polygon2 window)
         {
-            List<float> uniqueX = verticesAndIntersectionPoints.Select(v => v.X)
-                .Distinct(new FloatComparer())
+            List<double> uniqueX = verticesAndIntersectionPoints.Select(v => v.X)
+                .Distinct(new DoubleComparer())
                 .OrderBy(x => x)
                 .ToList();
             
             List<VerticalIntersectingLine> intersectingLines = new();
-            float maxY = verticesAndIntersectionPoints.Max(v => v.Y);
-            float minY = verticesAndIntersectionPoints.Min(v => v.Y);
+            double maxY = verticesAndIntersectionPoints.Max(v => v.Y);
+            double minY = verticesAndIntersectionPoints.Min(v => v.Y);
             
             foreach (float x in uniqueX)
             {
@@ -187,7 +187,7 @@ namespace GreinerHormannAlgorithm
                 //     }
                 // }
                 
-                result.Add(new List<Edge2>(sectorEdges));
+                result.Add(sectorEdges);
             }
 
             return result;
@@ -234,6 +234,9 @@ namespace GreinerHormannAlgorithm
                     if(edge1.NeverIntersectsWith(edge2))
                         continue;
                     
+                    if(edge1.SameEdge(edge2))
+                        continue;
+                    
                     if(edge1.HasSameVertexWithOtherEdge(edge2))
                         continue;
                     
@@ -252,9 +255,9 @@ namespace GreinerHormannAlgorithm
         }
     }
     
-    public class FloatComparer : IEqualityComparer<float>
+    public class DoubleComparer : IEqualityComparer<double>
     {
-        public bool Equals(float x, float y) => x.EqualsWithEpsilon(y);
-        public int GetHashCode(float value) => 0;
+        public bool Equals(double x, double y) => x.EqualsWithEpsilon(y);
+        public int GetHashCode(double value) => 0;
     }
 }

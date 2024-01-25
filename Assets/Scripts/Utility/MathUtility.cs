@@ -6,7 +6,7 @@ namespace Utility
 {
     public static class MathUtility
     {
-        public const float Epsilon = 0.000001f;
+        public const double Epsilon = 0.000000001d;
         
         public static int ClampListIndex(int index, int listSize) => 
             (index % listSize + listSize) % listSize;
@@ -14,7 +14,10 @@ namespace Utility
         public static float Det2(float x1, float x2, float y1, float y2) => 
             x1 * y2 - y1 * x2;
         
-        public static float Det2(MyVector2 a, MyVector2 b) => 
+        public static double Det2(double x1, double x2, double y1, double y2) => 
+            x1 * y2 - y1 * x2;
+        
+        public static double Det2(MyVector2 a, MyVector2 b) => 
             a.X * b.Y - a.Y * b.X;
 
         public static float AngleFromToCCW(MyVector2 from, MyVector2 to, bool shouldNormalize = false)
@@ -40,30 +43,44 @@ namespace Utility
                 to = MyVector2.Normalize(to);
             }
 
-            float dot = MyVector2.Dot(from, to);
+            float dot = (float)MyVector2.Dot(from, to);
             dot = Mathf.Clamp(dot, -1f, 1f);
             float angleRad = Mathf.Acos(dot);
             return angleRad;
         }
         
         //2D "cross product"
-        public static float Determinant(MyVector2 a, MyVector2 b) => 
+        public static double Determinant(MyVector2 a, MyVector2 b) => 
             a.X * b.Y - a.Y * b.X;
         
         public static float SignWithZero(float value, float zeroThreshold = 0.000001f) => 
             Math.Abs(value) < zeroThreshold ? 0 : Sign(value);
         
+        public static double SignWithZero(double value, double zeroThreshold = 0.000001f) => 
+            Math.Abs(value) < zeroThreshold ? 0 : Sign(value);
+        
         public static float Sign(float value) => 
+            value >= 0f ? 1 : -1;
+        
+        public static double Sign(double value) => 
             value >= 0f ? 1 : -1;
 
         public static bool IsZero(this float value) => 
             Math.Abs(value) <= Epsilon;
+        
+        public static bool IsZero(this double value) => 
+            Math.Abs(value) <= Epsilon;
 
         public static bool EqualsWithEpsilon(this float self, float value)
         {
-            float epsilon = Epsilon;
             float diff = self - value;
-            return diff > -epsilon && diff < epsilon;
+            return diff > -Epsilon && diff < Epsilon;
+        }
+        
+        public static bool EqualsWithEpsilon(this double self, double value)
+        {
+            double diff = self - value;
+            return diff > -Epsilon && diff < Epsilon;
         }
 
         public static int Mod(this int value, int length) => 
