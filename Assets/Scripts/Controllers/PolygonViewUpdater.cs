@@ -11,7 +11,7 @@ namespace Controllers
         private float _timeSinceLastUpdate;
         private bool _isUpdateRequested;
         
-        private List<List<MyVector2>> _finalPoly;
+        private List<Triangle2> _finalPoly;
         private List<MyVector2> _polyA;
         private List<MyVector2> _polyB;
         
@@ -46,7 +46,7 @@ namespace Controllers
             }
         }
 
-        private void UpdateVisuals(List<MyVector2> polyA, List<MyVector2> polyB, List<List<MyVector2>> finalPoly)
+        private void UpdateVisuals(List<MyVector2> polyA, List<MyVector2> polyB, List<Triangle2> finalPoly)
         {
             _isUpdateRequested = true;
             _polyA = polyA;
@@ -60,7 +60,7 @@ namespace Controllers
                 return;
             
             _polygonConnectionDrawer.UpdateLineRenderers(_polyA, _polyB, _finalPoly);
-            _polygonMeshCreator.CreateMeshFromPolyVertexList(_finalPoly);
+            _polygonMeshCreator.CreateMeshFromTriangleList(_finalPoly);
         }
                 
     }

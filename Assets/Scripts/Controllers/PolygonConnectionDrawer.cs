@@ -10,7 +10,7 @@ namespace Controllers
         [SerializeField] private LineRenderer _polyALineRenderer;
         [SerializeField] private LineRenderer _polyBLineRenderer;
         
-        public void UpdateLineRenderers(List<MyVector2> polyA, List<MyVector2> polyB, List<List<MyVector2>> finalPoly)
+        public void UpdateLineRenderers(List<MyVector2> polyA, List<MyVector2> polyB, List<Triangle2> finalPoly)
         {
             Vector3[] polyAV3 = polyA.ToListV3().ToArray();
             Vector3[] polyBV3 = polyB.ToListV3().ToArray();

@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DataStructures;
-using GreinerHormannAlgorithm;
 using TriangulationAlgorithm.EarClipping;
-using UnityEditor;
 using UnityEngine;
 
 namespace Utility.UnityUtility.DebugUtility
@@ -11,8 +9,7 @@ namespace Utility.UnityUtility.DebugUtility
     public class PolygonVertexInfoDebugVisualizer : MonoBehaviour
     {
         public static PolygonVertexInfoDebugVisualizer Instance;
-        private List<List<Vector3>> _finalPoly;
-        private (List<List<ClipVertex2>> polys, List<Polygon2> finalPoly) _polyToDraw;
+        private List<Triangle2> _finalPoly;
         private List<Mesh> _meshes = new();
         private List<VerticalIntersectingLine> _uniques;
         private List<List<Edge2>> _edges;
@@ -23,14 +20,12 @@ namespace Utility.UnityUtility.DebugUtility
             Instance = this;
         }
     
-        public void Initialize(List<MyVector2> polya, List<MyVector2> polyb, List<List<MyVector2>> finalpoly) => 
+        public void Initialize(List<MyVector2> polya, List<MyVector2> polyb, List<Triangle2> finalpoly) => 
             Initialize(finalpoly);
 
-        private void Initialize(List<List<MyVector2>> finalPoly)
+        private void Initialize(List<Triangle2> finalPoly)
         {
-            _finalPoly = new List<List<Vector3>>();
-            foreach (var poly in finalPoly) 
-                _finalPoly.Add(poly.ToListV3());
+            _finalPoly = finalPoly;
         }
     
         public void OnDrawGizmos()
@@ -100,11 +95,11 @@ namespace Utility.UnityUtility.DebugUtility
             //     foreach (VerticalIntersectingLine line in _uniques)
             //     {
             //         Gizmos.DrawLine(line.Line.P1.ToVector3(), line.Line.P2.ToVector3());
-            //         Handles.Label(line.SortedUniqueIntersections[0].ToVector3() + Quaternion.AngleAxis(0, Vector3.forward) * Vector3.up * 0.5f, 
+            //         Handles.Label(line.Intersections[0].ToVector3() + Quaternion.AngleAxis(0, Vector3.forward) * Vector3.up * 0.5f, 
             //             $"{_uniques.IndexOf(line)}");
             //
             //         int i = 0;
-            //         foreach (MyVector2 p in line.SortedUniqueIntersections)
+            //         foreach (MyVector2 p in line.Intersections)
             //         {
             //             Gizmos.DrawSphere(p.ToVector3(), 0.1f);
             //             Handles.Label(p.ToVector3() + Quaternion.AngleAxis(0, Vector3.forward) * Vector3.up * 0.2f, 
@@ -125,30 +120,20 @@ namespace Utility.UnityUtility.DebugUtility
             //     }
             // }
 
-            if (_triangles != null && _triangles.Count != 0)
-            {
-                foreach (Triangle2 triangle in _triangles)
-                {
-                    Gizmos.DrawLine(triangle.P1.ToVector3(), triangle.P2.ToVector3());
-                    Gizmos.DrawLine(triangle.P2.ToVector3(), triangle.P3.ToVector3());
-                    Gizmos.DrawLine(triangle.P3.ToVector3(), triangle.P1.ToVector3());
-                }
-                var mesh = CreateMeshFromPolyVertexList(_triangles);
-                Gizmos.color = new Color(0,1,1,0.3f);
-                Gizmos.DrawMesh(mesh, Vector3.zero);
-            }
+            // if (_triangles != null && _triangles.Count != 0)
+            // {
+            //     foreach (Triangle2 triangle in _triangles)
+            //     {
+            //         Gizmos.DrawLine(triangle.P1.ToVector3(), triangle.P2.ToVector3());
+            //         Gizmos.DrawLine(triangle.P2.ToVector3(), triangle.P3.ToVector3());
+            //         Gizmos.DrawLine(triangle.P3.ToVector3(), triangle.P1.ToVector3());
+            //     }
+            //     var mesh = CreateMeshFromPolyVertexList(_triangles);
+            //     Gizmos.color = new Color(0,1,1,0.3f);
+            //     Gizmos.DrawMesh(mesh, Vector3.zero);
+            // }
         }
 
-        public Color GetRandomColor()
-        {
-            return new Color(Random.value, Random.value, Random.value);
-        }
-
-        public void Draw((List<List<ClipVertex2>> polys, List<Polygon2> finalPoly) polyToDraw)
-        {
-            _polyToDraw = polyToDraw;
-        }
-        
         public Mesh CreateMeshFromPolyVertexList(List<List<MyVector2>> finalPoly)
         {
             _meshes.Clear();

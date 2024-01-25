@@ -18,8 +18,8 @@ namespace DataStructures
             P2 = p2;
             
             _minX = Math.Min(P1.X, P2.X);
-            _minY = Math.Min(P1.Y, P2.Y);
             _maxX = Math.Max(P1.X, P2.X);
+            _minY = Math.Min(P1.Y, P2.Y);
             _maxY = Math.Max(P1.Y, P2.Y);
         }
 
@@ -41,8 +41,8 @@ namespace DataStructures
 
         public bool NeverIntersectsWith(Edge2 edge)
         {
-            var p1 = edge.P1;
-            var p2 = edge.P2;
+            MyVector2 p1 = edge.P1;
+            MyVector2 p2 = edge.P2;
             
             bool isLeft  = p1.X < _minX && p2.X < _minX;
             bool isRight = p1.X > _maxX && p2.X > _maxX;

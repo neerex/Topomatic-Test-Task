@@ -2,7 +2,6 @@ using Controllers;
 using Controllers.Interfaces;
 using UI;
 using UnityEngine;
-using Utility.UnityUtility.DebugUtility;
 
 namespace Bootstrap
 {
@@ -24,10 +23,6 @@ namespace Bootstrap
             PolygonPointController polygonPointController = new PolygonPointController(_polygonDataProvider, polygonClippingController);
             _polygonManipulationWindow.Initialize(polygonClippingController, polygonPointController);
 
-            polygonClippingController.OnPolygonsRecalculation += PolygonVertexInfoDebugVisualizer.Instance.Initialize;
-            polygonClippingController.OnDraw += PolygonVertexInfoDebugVisualizer.Instance.Draw;
-            polygonClippingController.OnDraw2 += PolygonVertexInfoDebugVisualizer.Instance.Draw2;
-            
             polygonClippingController.CalculatePolygons();
         }
     }

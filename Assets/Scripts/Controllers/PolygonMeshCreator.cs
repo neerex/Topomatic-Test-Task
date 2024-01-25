@@ -18,6 +18,26 @@ namespace Controllers
             SetupMeshCreator();
         }
 
+        public Mesh CreateMeshFromTriangleList(List<Triangle2> triangles)
+        {
+            _meshes.Clear();
+            HashSet<Triangle2> triangulation = triangles.ToHashSet();
+            Mesh mesh = MeshUtility.Triangles2ToMesh(triangulation, false);
+            _meshes.Add(mesh);
+            
+            CombineInstance[] combine = new CombineInstance[_meshes.Count];
+
+            for (int i = 0; i < _meshes.Count; i++) 
+                combine[i].mesh = _meshes[i];
+
+            Mesh finalMesh = new Mesh();
+            finalMesh.CombineMeshes(combine, true, false);
+            finalMesh.RecalculateNormals();
+            finalMesh.CombineMeshes(combine, true, false);
+            _meshFilter.sharedMesh = finalMesh;
+            return finalMesh;
+        }
+
         public Mesh CreateMeshFromPolyVertexList(List<List<MyVector2>> finalPoly)
         {
             _meshes.Clear();

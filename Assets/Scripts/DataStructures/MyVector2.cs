@@ -21,7 +21,7 @@ namespace DataStructures
             a.X * a.X + a.Y * a.Y;
 
         public static double Magnitude(MyVector2 a) => 
-            (double)Math.Sqrt(SqrMagnitude(a));
+            Math.Sqrt(SqrMagnitude(a));
 
         public static double SqrDistance(MyVector2 a, MyVector2 b) => 
             SqrMagnitude(a - b);

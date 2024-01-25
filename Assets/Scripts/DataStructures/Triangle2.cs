@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DataStructures
+﻿namespace DataStructures
 {
     public readonly struct Triangle2
     {

@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using Controllers.Interfaces;
 using DataStructures;
-using GreinerHormannAlgorithm;
-using UnityEngine;
+using PolygonClipper;
 
 namespace Controllers
 {
-    public delegate void PolygonRecalculationHandler(List<MyVector2> polyA, List<MyVector2> polyB, List<List<MyVector2>> finalPoly);
+    public delegate void PolygonRecalculationHandler(List<MyVector2> polyA, List<MyVector2> polyB, List<Triangle2> finalPoly);
     
     public class PolygonClippingController : IPolygonClippingController
     {
@@ -16,11 +15,9 @@ namespace Controllers
         private BooleanOperation _operation = BooleanOperation.Intersection;
         private List<MyVector2> _polyA = new();
         private List<MyVector2> _polyB = new();
-        private List<List<MyVector2>> _finalPolygon = new();
-        private (List<List<ClipVertex2>> polys, List<Polygon2> finalPoly) _drawPoly;
+        private List<Triangle2> _finalPolygon = new();
         public event PolygonRecalculationHandler OnPolygonsRecalculation;
-        public event Action<(List<List<ClipVertex2>> polys, List<Polygon2> finalPoly)> OnDraw;
-        public event Action<(List<List<Edge2>> list, List<VerticalIntersectingLine> verticalIntersectionLines, List<Triangle2> triangles)> OnDraw2;
+        public event Action<List<Triangle2>> OnDraw;
 
         public PolygonClippingController(IPolygonProvider polygonProvider)
         {
@@ -39,14 +36,9 @@ namespace Controllers
             Polygon2 polyA = new Polygon2(_polyA);
             Polygon2 polyB = new Polygon2(_polyB);
 
-            var uniques = PolygonClippingAlgorithm.PolygonClipper(polyA, polyB, _operation);
-            OnDraw2?.Invoke(uniques);
+            _finalPolygon = PolygonClippingAlgorithm.PolygonClipper(polyA, polyB, _operation);
+            //OnDraw?.Invoke(_finalPolygon);
             
-            //_drawPoly = PolyClipper.PolygonClipper(polyA, polyB, BooleanOperation.Intersection);
-            //OnDraw?.Invoke(_drawPoly);
-            //Debug.Log($"{_drawPoly?.First().Count}");
-            
-            //_finalPolygon = GreinerHormann.ClipPolygons(_polyA, _polyB, _operation);
             OnPolygonsRecalculation?.Invoke(_polyA, _polyB, _finalPolygon);
         }
 

@@ -12,8 +12,5 @@
             P2 = p2;
             P3 = p3;
         }
-
-        public void ChangeOrientation() =>
-            (P1, P2) = (P2, P1);
     }
 }

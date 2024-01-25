@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using GreinerHormannAlgorithm;
 using Utility;
 
 namespace DataStructures
@@ -9,23 +8,18 @@ namespace DataStructures
     {
         public readonly IReadOnlyList<MyVector2> Points;
         public readonly IReadOnlyList<Edge2> Edges;
+        public readonly IReadOnlyList<Triangle2> Triangles;
 
         public Polygon2(IReadOnlyList<MyVector2> points)
         {
             Points = points;
             Edges = InitEdges();
         }
-
-        public MyVector2 this[int i] => Points[i.Mod(Count)];
         
-        public int Count => Points.Count;
-        public bool IsClockwise => SignedArea > 0;
-
-        public bool IsPointOnAnyEdge(MyVector2 point) => Edges.Any(e => GeometryUtility.IsPointOnLine(e, point));
-        public bool Contains(MyVector2 point) => WindingNumber(point) != 0;
-
-        public double MinY() => Points.Min(p => p.Y);
-        public double MaxY() => Points.Max(p => p.Y);
+        public Polygon2(IReadOnlyList<Triangle2> triangles)
+        {
+            Triangles = triangles;
+        }
 
         private double SignedArea 
         {
@@ -42,6 +36,18 @@ namespace DataStructures
                 return sum * 0.5f;
             }
         }
+
+        public MyVector2 this[int i] => Points[i.Mod(Count)];
+
+        public int Count => Points.Count;
+
+        public bool IsClockwise => SignedArea > 0;
+
+        public bool Contains(MyVector2 point) => WindingNumber(point) != 0;
+
+        public double MinY() => Points.Min(p => p.Y);
+
+        public double MaxY() => Points.Max(p => p.Y);
 
         private int WindingNumber(MyVector2 point) 
         {
@@ -63,7 +69,7 @@ namespace DataStructures
             
             return winding;
             
-            double IsLeft( MyVector2 a, MyVector2 b, MyVector2 p ) => 
+            double IsLeft(MyVector2 a, MyVector2 b, MyVector2 p) => 
                 MathUtility.SignWithZero(MathUtility.Determinant(a.To(p), a.To(b)));
         }
 
@@ -71,10 +77,10 @@ namespace DataStructures
         {
             for (int i = 0; i < Edges.Count - 1; i++)
             {
-                var edge1 = Edges[i];
+                Edge2 edge1 = Edges[i];
                 for (int j = i + 1; j < Edges.Count; j++)
                 {
-                    var edge2 = Edges[j];
+                    Edge2 edge2 = Edges[j];
                     
                     if(edge1.NeverIntersectsWith(edge2))
                         continue;
@@ -90,6 +96,15 @@ namespace DataStructures
                 }
             }
             return false;
+        }
+
+        public bool ContainsPolygon(Polygon2 poly)
+        {
+            foreach (Edge2 edge in poly.Edges)
+                if (Edges.Any(e => GeometryUtility.LineLine(e, edge, false)))
+                    return false;
+
+            return true;
         }
 
         private List<Edge2> InitEdges()
