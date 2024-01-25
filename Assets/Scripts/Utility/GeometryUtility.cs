@@ -129,7 +129,7 @@ namespace Utility
             var lenTotal = MyVector2.Magnitude(a_b);
             var lenSum = MyVector2.Magnitude(a_p) + MyVector2.Magnitude(b_p);
             
-            return lenTotal >= lenSum - epsilon && lenTotal <= lenSum + epsilon;
+            return Math.Abs(lenTotal - lenSum) <= epsilon;
         }
         
         public static MyVector2 GetLineLineIntersectionPoint(Edge2 a, Edge2 b)

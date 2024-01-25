@@ -61,8 +61,9 @@ namespace Utility
 
         public static bool EqualsWithEpsilon(this float self, float value)
         {
+            float epsilon = Epsilon;
             float diff = self - value;
-            return diff > -Epsilon && diff < Epsilon;
+            return diff > -epsilon && diff < epsilon;
         }
 
         public static int Mod(this int value, int length) => 

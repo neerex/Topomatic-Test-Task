@@ -149,21 +149,22 @@ namespace GreinerHormannAlgorithm
                 int nextIndex = 0;
 
                 //Debug.Log($"Line{i}Count: {currPoints.Count} Line{i+1}Count: {nextPoint.Count}");
-
+                int lastNextIntersection = 0;
                 for (var j = 0; j < currPoints.Count; j++)
                 {
                     var v1 = currPoints[j];
-                    for (var k = 0; k < nextPoint.Count; k++)
+                    for (var k = lastNextIntersection; k < nextPoint.Count; k++)
                     {
                         var v2 = nextPoint[k];
                         var edge = new Edge2(v1, v2);
                         if (IsEdgeLiesOnPolygonPerimeter(poly, edge) || IsEdgeLiesOnPolygonPerimeter(window, edge))
                         {
                             //Debug.Log($"Found laying edge. Lines: {i}-{i + 1}. Points: {j} and {k}");
-                            if(!sectorEdges.Contains(edge))
-                                sectorEdges.Add(edge);
+                            sectorEdges.Add(edge);
+                            lastNextIntersection++;
                         }
                     }
+                    lastNextIntersection = Math.Clamp(lastNextIntersection - 1, 0, nextPoint.Count - 1);
                 }
 
                 // while (currIndex + nextIndex < currPoints.Count + nextPoint.Count - 2)
