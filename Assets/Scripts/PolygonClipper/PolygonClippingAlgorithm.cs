@@ -22,11 +22,11 @@ namespace PolygonClipper
                 return result;
             
             // step 1
-            // simplify polygon, remove vertexes that are on the same line for optimization purpose
+            // simplify polygon, remove vertices that are on the same line for optimization purpose
             poly = SimplifyPolygon(poly);
             window = SimplifyPolygon(window);
             
-            // check if one polygon is inside the other, so we have no need to calculate intersection
+            // check if one polygon is inside or outside the other, so we have no need to calculate intersection
             if (operation == BooleanOperation.Intersection && (!poly.IntersectsWith(window) || !window.IntersectsWith(poly))) 
                 return result;
             

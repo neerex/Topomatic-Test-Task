@@ -907,6 +907,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9c12c3c44a7cc949861277e8e367c2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _warningMessageLifeTime: 1
   _tmp: {fileID: 1066721824}
 --- !u!1 &339831374
 GameObject:
