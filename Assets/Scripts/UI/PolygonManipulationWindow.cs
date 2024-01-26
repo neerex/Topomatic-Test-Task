@@ -49,10 +49,10 @@ namespace UI
             _polygonClippingController.OnPolygonsRecalculation += ShowPolygonAreaCalculation;
         }
         
-        private void ShowPolygonAreaCalculation(List<MyVector2> polyA, List<MyVector2> polyB, List<Triangle2> finalPoly)
+        private void ShowPolygonAreaCalculation(Polygon2 polyA, Polygon2 polyB, List<Triangle2> finalPoly)
         {
-            float areaA = (float)Math.Round(GeometryUtility.PolygonArea(polyA), 1);
-            float areaB = (float)Math.Round(GeometryUtility.PolygonArea(polyB), 1);
+            float areaA = (float)Math.Round(GeometryUtility.PolygonArea(polyA.Points), 1);
+            float areaB = (float)Math.Round(GeometryUtility.PolygonArea(polyB.Points), 1);
 
             _areaAText.text = areaA.ToString(CultureInfo.InvariantCulture);
             _areaBText.text = areaB.ToString(CultureInfo.InvariantCulture);

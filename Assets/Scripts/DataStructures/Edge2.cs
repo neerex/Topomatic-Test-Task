@@ -23,14 +23,17 @@ namespace DataStructures
             _maxY = Math.Max(P1.Y, P2.Y);
         }
 
-        public bool SameEdge(Edge2 edge) => 
+        public bool IsSame(Edge2 edge) => 
             edge.P1.Equals(P1) && edge.P2.Equals(P2) || edge.P1.Equals(P2) && edge.P2.Equals(P1);
 
         public bool StartsOrEndsWith(MyVector2 p) => 
             P1.Equals(p) || P2.Equals(p);
 
-        public bool HasSameVertexWithOtherEdge(Edge2 edge) => 
+        public bool HasSameVertexWith(Edge2 edge) => 
             P1.Equals(edge.P1) || P1.Equals(edge.P2) || P2.Equals(edge.P1) || P2.Equals(edge.P2);
+
+        public bool HasSameVertices() => 
+            P1.Equals(P2);
 
         public bool IsPointInEdgeBox(MyVector2 p)
         {

@@ -9,6 +9,7 @@ namespace Bootstrap
     {
         [SerializeField] private PolygonDataProvider _polygonDataProvider;
         [SerializeField] private PolygonManipulationWindow _polygonManipulationWindow;
+        [SerializeField] private WarningWindow _warningWindow;
         [SerializeField] private PolygonConnectionDrawer _polygonConnectionDrawer;
         [SerializeField] private PolygonViewUpdater _polygonViewUpdater;
         
@@ -22,6 +23,7 @@ namespace Bootstrap
             
             PolygonPointController polygonPointController = new PolygonPointController(_polygonDataProvider, polygonClippingController);
             _polygonManipulationWindow.Initialize(polygonClippingController, polygonPointController);
+            _warningWindow.Initialize(polygonClippingController);
 
             polygonClippingController.CalculatePolygons();
         }

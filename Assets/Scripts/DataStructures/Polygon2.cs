@@ -78,14 +78,18 @@ namespace DataStructures
             for (int i = 0; i < Edges.Count - 1; i++)
             {
                 Edge2 edge1 = Edges[i];
+                
+                if (edge1.HasSameVertices())
+                    return true;
+                
                 for (int j = i + 1; j < Edges.Count; j++)
                 {
                     Edge2 edge2 = Edges[j];
-                    
+
                     if(edge1.NeverIntersectsWith(edge2))
                         continue;
                     
-                    if(edge1.SameEdge(edge2))
+                    if(edge1.IsSame(edge2))
                         return true;
                     
                     if(GeometryUtility.IsEdgeTouchingEdge(edge1, edge2, out _))
@@ -98,13 +102,21 @@ namespace DataStructures
             return false;
         }
 
-        public bool ContainsPolygon(Polygon2 poly)
+        public bool IntersectsWith(Polygon2 poly)
         {
-            foreach (Edge2 edge in poly.Edges)
-                if (Edges.Any(e => GeometryUtility.LineLine(e, edge, false)))
-                    return false;
-
-            return true;
+            foreach (Edge2 e1 in Edges)
+            {
+                foreach (Edge2 e2 in poly.Edges)
+                {
+                    if (GeometryUtility.IsEdgeContainsEdge(e1, e2) || 
+                        GeometryUtility.IsEdgeTouchingEdge(e1, e2, out _) || 
+                        GeometryUtility.LineLine(e1, e2, true))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private List<Edge2> InitEdges()

@@ -49,7 +49,7 @@ namespace Utility
             return new MyVector3((float)v.X, (float)v.Y, zPos);
         }
 
-        public static List<Vector3> ToListV3(this List<MyVector2> thisPolygon)
+        public static List<Vector3> ToListV3(this IEnumerable<MyVector2> thisPolygon)
         {
             List<Vector3> polygonAfterClipping3D = new List<Vector3>();
 
@@ -59,7 +59,7 @@ namespace Utility
             return polygonAfterClipping3D;
         }
         
-        public static List<MyVector2> ToListMyV2(this List<Vector3> thisPolygon)
+        public static List<MyVector2> ToListMyV2(this IEnumerable<Vector3> thisPolygon)
         {
             List<MyVector2> polygonAfterClipping2D = new List<MyVector2>();
 

@@ -6,7 +6,7 @@ using PolygonClipper;
 
 namespace Controllers
 {
-    public delegate void PolygonRecalculationHandler(List<MyVector2> polyA, List<MyVector2> polyB, List<Triangle2> finalPoly);
+    public delegate void PolygonRecalculationHandler(Polygon2 polyA, Polygon2 polyB, List<Triangle2> finalPoly);
     
     public class PolygonClippingController : IPolygonClippingController
     {
@@ -17,7 +17,7 @@ namespace Controllers
         private List<MyVector2> _polyB = new();
         private List<Triangle2> _finalPolygon = new();
         public event PolygonRecalculationHandler OnPolygonsRecalculation;
-        public event Action<List<Triangle2>> OnDraw;
+        public event Action<PolygonType> OnSelfIntersection;
 
         public PolygonClippingController(IPolygonProvider polygonProvider)
         {
@@ -36,10 +36,12 @@ namespace Controllers
             Polygon2 polyA = new Polygon2(_polyA);
             Polygon2 polyB = new Polygon2(_polyB);
 
+            if (polyA.IsSelfIntersecting()) OnSelfIntersection?.Invoke(PolygonType.A);
+            if (polyB.IsSelfIntersecting()) OnSelfIntersection?.Invoke(PolygonType.B);
+
             _finalPolygon = PolygonClippingAlgorithm.PolygonClipper(polyA, polyB, _operation);
-            //OnDraw?.Invoke(_finalPolygon);
             
-            OnPolygonsRecalculation?.Invoke(_polyA, _polyB, _finalPolygon);
+            OnPolygonsRecalculation?.Invoke(polyA, polyB, _finalPolygon);
         }
 
         public void SetOperation(BooleanOperation operationType)

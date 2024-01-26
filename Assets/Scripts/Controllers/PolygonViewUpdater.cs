@@ -12,8 +12,8 @@ namespace Controllers
         private bool _isUpdateRequested;
         
         private List<Triangle2> _finalPoly;
-        private List<MyVector2> _polyA;
-        private List<MyVector2> _polyB;
+        private Polygon2 _polyA;
+        private Polygon2 _polyB;
         
         private IPolygonClippingController _polygonClippingController;
         private IPolygonMeshCreator _polygonMeshCreator;
@@ -46,7 +46,7 @@ namespace Controllers
             }
         }
 
-        private void UpdateVisuals(List<MyVector2> polyA, List<MyVector2> polyB, List<Triangle2> finalPoly)
+        private void UpdateVisuals(Polygon2 polyA, Polygon2 polyB, List<Triangle2> finalPoly)
         {
             _isUpdateRequested = true;
             _polyA = polyA;
@@ -56,7 +56,7 @@ namespace Controllers
 
         private void UpdateVisuals()
         {
-            if(_finalPoly == null || _polyA == null || _polyB == null)
+            if(_finalPoly == null || _polyA.Points == null || _polyB.Points == null)
                 return;
             
             _polygonConnectionDrawer.UpdateLineRenderers(_polyA, _polyB, _finalPoly);

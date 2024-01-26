@@ -8,7 +8,6 @@ namespace DataStructures
     {
         private readonly Edge2 _line;
         private readonly double _x;
-        
         private readonly List<MyVector2> _intersections = new();
         public IReadOnlyList<MyVector2> Intersections => _intersections.AsReadOnly();
         

@@ -10,10 +10,10 @@ namespace Controllers
         [SerializeField] private LineRenderer _polyALineRenderer;
         [SerializeField] private LineRenderer _polyBLineRenderer;
         
-        public void UpdateLineRenderers(List<MyVector2> polyA, List<MyVector2> polyB, List<Triangle2> finalPoly)
+        public void UpdateLineRenderers(Polygon2 polyA, Polygon2 polyB, List<Triangle2> finalPoly)
         {
-            Vector3[] polyAV3 = polyA.ToListV3().ToArray();
-            Vector3[] polyBV3 = polyB.ToListV3().ToArray();
+            Vector3[] polyAV3 = polyA.Points.ToListV3().ToArray();
+            Vector3[] polyBV3 = polyB.Points.ToListV3().ToArray();
             
             _polyALineRenderer.positionCount = polyAV3.Length;
             _polyBLineRenderer.positionCount = polyBV3.Length;

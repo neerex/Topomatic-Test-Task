@@ -15,17 +15,21 @@ namespace PolygonClipper
 
             // step 0
             // check if polygon is self intersecting, return empty result if they are
-            if (poly.IsSelfIntersecting()) return result;
-            if (window.IsSelfIntersecting()) return result;
+            if (poly.IsSelfIntersecting()) 
+                return result;
             
-            // check if one polygon is inside the other, so we have no need to calculate intersection
-            if (operation == BooleanOperation.Intersection && (poly.ContainsPolygon(window) || window.ContainsPolygon(poly))) return result;
+            if (window.IsSelfIntersecting()) 
+                return result;
             
             // step 1
             // simplify polygon, remove vertexes that are on the same line for optimization purpose
             poly = SimplifyPolygon(poly);
             window = SimplifyPolygon(window);
-
+            
+            // check if one polygon is inside the other, so we have no need to calculate intersection
+            if (operation == BooleanOperation.Intersection && (!poly.IntersectsWith(window) || !window.IntersectsWith(poly))) 
+                return result;
+            
             // step 2
             // add all vertices from all polygons and add all intersection vertices
             List<MyVector2> verticesAndIntersectionPoints = new List<MyVector2>();
@@ -83,10 +87,10 @@ namespace PolygonClipper
                     if(edge1.NeverIntersectsWith(edge2))
                         continue;
                     
-                    if(edge1.SameEdge(edge2))
+                    if(edge1.IsSame(edge2))
                         continue;
                     
-                    if(edge1.HasSameVertexWithOtherEdge(edge2))
+                    if(edge1.HasSameVertexWith(edge2))
                         continue;
                     
                     if(GeometryUtility.IsEdgeContainsEdge(edge1, edge2))
@@ -184,7 +188,9 @@ namespace PolygonClipper
                 MyVector2 p1 = top.P1;
                 MyVector2 p2 = top.P2;
                 MyVector2 p3 = bottom.P2;
+                
                 Triangle2 triangle = new Triangle2(p1, p2, p3);
+                
                 triangles.Add(triangle);
             }
             else if (top.P2.Equals(bottom.P2))
@@ -192,7 +198,9 @@ namespace PolygonClipper
                 MyVector2 p1 = top.P1;
                 MyVector2 p2 = top.P2;
                 MyVector2 p3 = bottom.P1;
+                
                 Triangle2 triangle = new Triangle2(p1, p2, p3);
+                
                 triangles.Add(triangle);
             }
             else
@@ -201,8 +209,10 @@ namespace PolygonClipper
                 MyVector2 p2 = top.P2;
                 MyVector2 p3 = bottom.P1;
                 MyVector2 p4 = bottom.P2;
+                
                 Triangle2 triangle1 = new Triangle2(p1, p2, p4);
                 Triangle2 triangle2 = new Triangle2(p1, p4, p3);
+                
                 triangles.Add(triangle1);
                 triangles.Add(triangle2);
             }
