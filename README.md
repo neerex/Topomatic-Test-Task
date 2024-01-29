@@ -8,10 +8,10 @@
 https://simmer.io/@Ilya_Leontev/topomatic-test-task
 
 # Дополнения
-1-2 Задания: 
+Задания 1-2: 
 Файл в проекте: PolygonClippingAlgorithm.cs
 
-3 Задание: Использовалась формула площади Гаусса
+Задание 3: Использовалась формула площади Гаусса
 https://ru.wikipedia.org/wiki/%D0%A4%D0%BE%D1%80%D0%BC%D1%83%D0%BB%D0%B0_%D0%BF%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D0%B8_%D0%93%D0%B0%D1%83%D1%81%D1%81%D0%B0
 Файл в проекте: GeometryUtility.cs метод PolygonArea()
 
@@ -22,7 +22,7 @@ https://ru.wikipedia.org/wiki/%D0%A4%D0%BE%D1%80%D0%BC%D1%83%D0%BB%D0%B0_%D0%BF%
 4. Ввод вершин может быть как по часовой, так и против часовой стрелки
 5. При выборе опции Intersection, меньший полигон внутри большего полигона
  не является пересечением
-6. Для визуализации извользован движок Unity
+6. Для визуализации использован движок Unity
 
 
 ![JtwZzpRQ44](https://github.com/neerex/Topomatic-Test-Task/assets/48661254/408d837d-c20c-406f-8623-8d34b6d20094)
